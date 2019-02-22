@@ -1,5 +1,9 @@
 ﻿import ControlPointsClass from './ControlPointsClass';
-
+/**
+ * Class holding information for all contriol points in BGS 2005 KK projection
+ * @private
+ * @extends {ControlPointsClass}
+ */
 export default class BGS2005KK extends ControlPointsClass {
   constructor() {
     super();
@@ -7,7 +11,9 @@ export default class BGS2005KK extends ControlPointsClass {
     this.initPoints();
     this.initTree();
   }
-
+  /**
+   * Initializes all control points in this projection
+   */
   initPoints() {
     this._points = [
       { id: 1, x: 4845839.59, y: 417494.7961 },

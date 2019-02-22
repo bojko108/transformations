@@ -1,5 +1,9 @@
 ﻿import ControlPointsClass from './ControlPointsClass';
-
+/**
+ * Class holding information for all contriol points in BGS 1930 24 projection
+ * @private
+ * @extends {ControlPointsClass}
+ */
 export default class BGS193024 extends ControlPointsClass {
   constructor() {
     super();
@@ -7,7 +11,9 @@ export default class BGS193024 extends ControlPointsClass {
     this.initPoints();
     this.initTree();
   }
-
+  /**
+   * Initializes all control points in this projection
+   */
   initPoints() {
     this._points = [
       { id: 1, x: 4845196.3236, y: 8538521.2622 },

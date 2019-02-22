@@ -18060,7 +18060,7 @@ class Transformations {
     latitude = (180 / Math.PI) * (2 * Math.atan(Math.exp((latitude * Math.PI) / 180)) - Math.PI / 2);
     return [latitude, longitude];
   }
-  DDToDMS(decimalDegrees) {
+  ConvertDecimalDegreesToDMS(decimalDegrees) {
     if (Array.isArray(decimalDegrees)) {
       return decimalDegrees.map(dd => {
         return toDMS(dd);
@@ -18069,7 +18069,7 @@ class Transformations {
       return toDMS(decimalDegrees);
     }
   }
-  DMSToDD(dms) {
+  ConvertDMStoDecimalDegrees(dms) {
     if (Array.isArray(dms)) {
       return dms.map(d => {
         return toDMS(d);

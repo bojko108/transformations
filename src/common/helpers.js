@@ -1,11 +1,27 @@
+/**
+ * Convert degrees to radians
+ * @public
+ * @param {!Number} degrees 
+ * @return {Number}
+ */
 export function toRad(degrees) {
   return (degrees * Math.PI) / 180;
 }
-
+/**
+ * Convert radians to degrees
+ * @public
+ * @param {!Number} radians 
+ * @return {Number}
+ */
 export function toDeg(radians) {
   return (radians / Math.PI) * 180;
 }
-
+/**
+ * Convert decimal degrees to degrees, minutes and seconds
+ * @public
+ * @param {!Number} decimalDegrees 
+ * @return {String}
+ */
 export function toDMS(decimalDegrees) {
   let input = decimalDegrees,
     minpart,
@@ -24,6 +40,12 @@ export function toDMS(decimalDegrees) {
   }
   return `${pad(decimalDegrees)}${pad(min)}${pad(sec)}`;
 }
+/**
+ * Convert degrees, minutes and seconds to decimal degrees
+ * @public
+ * @param {!String} dms 
+ * @return {Number}
+ */
 export function toDD(dms) {
   let deg, min, sec;
   dms = dms.toString();
@@ -32,6 +54,13 @@ export function toDD(dms) {
   sec = dms.replace(`${deg}${min}`, '');
   return parseFloat(deg) + parseFloat(min) / 60 + parseFloat(sec) / 60 / 60;
 }
+/**
+ * Add `0` in front of number
+ * @public
+ * @param {!Number} number 
+ * @param {!Number} size 
+ * @return {String}
+ */
 export function pad(number, size = 2) {
   let s = number.toString();
   while (s.length < size) {
@@ -41,9 +70,9 @@ export function pad(number, size = 2) {
 }
 /**
  * Calculates length of the meridian from the equator to the specified Latitude
- *
- * @param {Number} latitude - in radians
- * @param {Object.<String,*>} ellipsoid
+ * @public
+ * @param {!Number} latitude - in radians
+ * @param {!Object.<String,*>} ellipsoid
  * @return {Number} - length in meters
  */
 export function arcLengthOfMeridian(latitude, ellipsoid) {
@@ -67,10 +96,10 @@ export function arcLengthOfMeridian(latitude, ellipsoid) {
 }
 
 /**
- * Calculates base latitude from northing coordinate for a point.
- *
- * @param {Number} latitude
- * @param {Object.<String,*>} ellipsoid
+ * Calculates base latitude from northing coordinate of a point.
+ * @public
+ * @param {!Number} northing
+ * @param {!Object.<String,*>} ellipsoid
  * @return {Number} - latitude in radians
  */
 export function footpointLatitude(northing, ellipsoid) {
@@ -93,11 +122,21 @@ export function calculateQParameter(latitude, ellipsoid) {
       ellipsoid.e * Math.log((1 + ellipsoid.e * Math.sin(latitude)) / (1 - ellipsoid.e * Math.sin(latitude))))
   );
 }
-
+/**
+ * @public
+ * @param {!Number} latitude - in radians 
+ * @param {!Object.<String,*>} ellipsoid 
+ * @return {Number}
+ */
 export function calculateWParameter(latitude, ellipsoid) {
   return Math.sqrt(1 - ellipsoid.e2 * Math.pow(Math.sin(latitude), 2));
 }
-
+/**
+ * @public
+ * @param {!Number} latitude - in radians 
+ * @param {!Object.<String,*>} ellipsoid 
+ * @return {Number}
+ */
 export function calculateCentralPointX(lat0, ellipsoid) {
   const m0 = ellipsoid.a * (1 - ellipsoid.e2),
     m2 = 1.5 * ellipsoid.e2 * m0,

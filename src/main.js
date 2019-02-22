@@ -414,7 +414,7 @@ export class Transformations {
     return [latitude, longitude];
   }
 
-  DDToDMS(decimalDegrees) {
+  ConvertDecimalDegreesToDMS(decimalDegrees) {
     if (Array.isArray(decimalDegrees)) {
       return decimalDegrees.map(dd => {
         return toDMS(dd);
@@ -424,7 +424,7 @@ export class Transformations {
     }
   }
 
-  DMSToDD(dms) {
+  ConvertDMStoDecimalDegrees(dms) {
     if (Array.isArray(dms)) {
       return dms.map(d => {
         return toDMS(d);

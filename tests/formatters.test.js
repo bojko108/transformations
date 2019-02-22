@@ -6,7 +6,7 @@ describe('Test Coordinate formatters', () => {
     let tr = new Transformations();
     let input = 42.336542;
     let expected = '422011.5512';
-    let result = tr.DDToDMS(input);
+    let result = tr.ConvertDecimalDegreesToDMS(input);
 
     assert.isNotNull(result);
     assert.strictEqual(result, expected);
@@ -16,7 +16,7 @@ describe('Test Coordinate formatters', () => {
     let tr = new Transformations();
     let input = '422011.5512';
     let expected = 42.336542;
-    let result = tr.DMSToDD(input);
+    let result = tr.ConvertDMStoDecimalDegrees(input);
 
     assert.isNotNull(result);
     assert.strictEqual(result, expected);

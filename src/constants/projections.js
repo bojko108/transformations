@@ -8,7 +8,6 @@ export const BGS_SOFIA = {
 export const BGS_1930_24 = {
   name: 'BGS_1930_24',
   alias: 'КС 1930 24 градусови',
-  table: 'bgs.bgs_1930_24',
   Lon0: 24,
   y0: 8500000.0,
   scale: 0.9999
@@ -17,7 +16,6 @@ export const BGS_1930_24 = {
 export const BGS_1930_27 = {
   name: 'BGS_1930_27',
   alias: 'КС 1930 27 градусови',
-  table: 'bgs.bgs_1930_27',
   Lon0: 27,
   y0: 9500000.0,
   scale: 0.9999

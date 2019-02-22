@@ -106,13 +106,13 @@ export class Transformations {
     return resultPoint;
   }
   /**
-   * Transforms geographic coordinates to projected in Lambert projection. You can pass single point or 
+   * Transforms geographic coordinates to projected in Lambert projection. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [Latitude, Longitude] or array of points
    * @param {Object.<String,*>} [outputProjection=projections.BGS_2005_KK] - output projection
    * @param {Object.<String,*>} [outputEllipsoid=ellipsoids.WGS84] - output ellipsoid
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformGeographicToLambert(coordinates, outputProjection = projections.BGS_2005_KK, outputEllipsoid = ellipsoids.WGS84) {
     // are we transforming single point or set of points
@@ -159,13 +159,13 @@ export class Transformations {
     return isArray ? result : result[0];
   }
   /**
-   * Transforms projected in Lambert projection to geographic coordinates. You can pass single point or 
+   * Transforms projected in Lambert projection to geographic coordinates. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [Northing, Easting] or array of points
    * @param {Object.<String,*>} [inputProjection=projections.BGS_2005_KK] - input projection
    * @param {Object.<String,*>} [inputEllipsoid=ellipsoids.WGS84] - input ellipsoid
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformLambertToGeographic(coordinates, inputProjection = projections.BGS_2005_KK, inputEllipsoid = ellipsoids.WGS84) {
     // are we transforming single point or set of points
@@ -229,37 +229,37 @@ export class Transformations {
     return isArray ? result : result[0];
   }
   /**
-   * Transforms geographic coordinates to projected in UTM projection. You can pass single point or 
+   * Transforms geographic coordinates to projected in UTM projection. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [Latitude, Longitude] or array of points
    * @param {Object.<String,*>} [outputUtmProjection=projections.UTM35N] - output projection
    * @param {Object.<String,*>} [inputEllipsoid=ellipsoids.WGS84] - input ellipsoid
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformGeographicToUTM(coordinates, outputUtmProjection = projections.UTM35N, inputEllipsoid = ellipsoids.WGS84) {
     return this.transformGeographicToGauss(coordinates, outputUtmProjection, inputEllipsoid);
   }
   /**
-   * Transforms projected in UTM projection to geographic coordinates. You can pass single point or 
+   * Transforms projected in UTM projection to geographic coordinates. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [Northing, Easting] or array of points
    * @param {Object.<String,*>} [inputUtmProjection=projections.UTM35N] - input projection
    * @param {Object.<String,*>} [outputEllipsoid=ellipsoids.WGS84] - input ellipsoid
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformUTMToGeographic(coordinates, inputUtmProjection = projections.UTM35N, outputEllipsoid = ellipsoids.WGS84) {
     return this.transformGaussToGeographic(coordinates, inputUtmProjection, outputEllipsoid);
   }
   /**
-   * Transforms geographic coordinates to projected in Gauss-Kruger projection. You can pass single point or 
+   * Transforms geographic coordinates to projected in Gauss-Kruger projection. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [Latitude, Longitude] or array of points
    * @param {Object.<String,*>} [outputProjection=projections.BGS_1930_24] - output projection
    * @param {Object.<String,*>} [inputEllipsoid=ellipsoids.HAYFORD] - input ellipsoid
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformGeographicToGauss(coordinates, outputProjection = projections.BGS_1930_24, inputEllipsoid = ellipsoids.HAYFORD) {
     // are we transforming single point or set of points
@@ -312,13 +312,13 @@ export class Transformations {
     return isArray ? result : result[0];
   }
   /**
-   * Transforms projected in Gauss-Kruger projection to geographic coordinates. You can pass single point or 
+   * Transforms projected in Gauss-Kruger projection to geographic coordinates. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [Northing, Easting] or array of points
    * @param {Object.<String,*>} [inputProjection=projections.BGS_1930_24] - input projection
    * @param {Object.<String,*>} [outputEllipsoid=ellipsoids.HAYFORD] - input ellipsoid
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformGaussToGeographic(coordinates, inputProjection = projections.BGS_1930_24, outputEllipsoid = ellipsoids.HAYFORD) {
     // are we transforming single point or set of points
@@ -415,12 +415,12 @@ export class Transformations {
     return isArray ? result : result[0];
   }
   /**
-   * Transforms geographic coordinates to geocentric. You can pass single point or 
+   * Transforms geographic coordinates to geocentric. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [Latitude, Longitude] or array of points
    * @param {Object.<String,*>} [outputEllipsoid=ellipsoids.WGS84] - output ellipsoid
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformGeographicToGeocentric(coordinates, outputEllipsoid = ellipsoids.WGS84) {
     const latitude = toRad(coordinates[0]),
@@ -439,12 +439,12 @@ export class Transformations {
     return [X, Y, Z];
   }
   /**
-   * Transforms geocentric geographic coordinates. You can pass single point or 
+   * Transforms geocentric geographic coordinates. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [X, Y, Z] or array of points
    * @param {Object.<String,*>} [inputEllipsoid=ellipsoids.WGS84] - input ellipsoid
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformGeocentricToGeographic(coordinates, inputEllipsoid = ellipsoids.WGS84) {
     const X = coordinates[0],
@@ -478,11 +478,11 @@ export class Transformations {
     return [toDeg(lat), toDeg(lon), h];
   }
   /**
-   * Transforms geographic coordinates to projected in WebMercator. You can pass single point or 
+   * Transforms geographic coordinates to projected in WebMercator. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [Latitude, Longitude] or array of points
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformGeographicToWebMercator(coordinates) {
     const latitude = coordinates[0],
@@ -497,11 +497,11 @@ export class Transformations {
     return [x, y];
   }
   /**
-   * Transforms projected coordinates in WebMercator to geographic. You can pass single point or 
+   * Transforms projected coordinates in WebMercator to geographic. You can pass single point or
    * array of points.
    * @public
    * @param {!Array.<Number>|Array} coordinates - coordinates in [Northing, Easting] or array of points
-   * @return {Array.<Number>|Array} 
+   * @return {Array.<Number>|Array}
    */
   transformWebMercatorToGeographic(coordinates) {
     const x = coordinates[1],
@@ -518,7 +518,7 @@ export class Transformations {
   /**
    * Converts decimal degrees to degrees, minutes and seconds
    * @public
-   * @param {!Number|Array.<Number>} decimalDegrees 
+   * @param {!Number|Array.<Number>} decimalDegrees
    * @return {String}
    */
   ConvertDecimalDegreesToDMS(decimalDegrees) {
@@ -533,7 +533,7 @@ export class Transformations {
   /**
    * Converts degrees, minutes and seconds to decimal degrees
    * @public
-   * @param {!String|Array.<String>} dms 
+   * @param {!String|Array.<String>} dms
    * @return {Number}
    */
   ConvertDMStoDecimalDegrees(dms) {

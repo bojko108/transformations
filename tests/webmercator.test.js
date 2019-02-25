@@ -1,7 +1,7 @@
 import { checkResult, DELTA_METERS, DELTA_DEGREES } from './test';
 import { Transformations, ellipsoids, projections } from '../src/main';
 
-describe(`Test Geographic and Web Mercator coordinates dS = ${DELTA_METERS}cm, ${DELTA_DEGREES}deg`, () => {
+describe(`Test Geographic and Web Mercator coordinates dS = ${DELTA_METERS}m, ${DELTA_DEGREES}deg`, () => {
   it('Geographic to Web Mercator coordinates', () => {
     let tr = new Transformations();
     let input = [42.450682, 24.749747];

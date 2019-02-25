@@ -1,7 +1,7 @@
 import { checkResult, DELTA_BGS } from './test';
 import { Transformations, ellipsoids, projections } from '../src/main';
 
-describe(`Test BGS Coordinates with Affine transformation dS = ${DELTA_BGS}cm`, () => {
+describe(`Test BGS Coordinates with Affine transformation dS = ${DELTA_BGS}m`, () => {
   it('BGS 1930 24 degrees', () => {
     let tr = new Transformations();
     let input = [4728966.163, 8607005.227];

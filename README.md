@@ -45,18 +45,17 @@ You can transform between:
 - Projected coordinates
 - Geocentric coordinates
 
-Transformations between BGS coordinate systems are done by calculating transformation parameters using TPS or Affine transformation based on predefined control points ([ControlPoints namespace](https://github.com/bojko108/transformations/tree/master/src/controlPoints)). You can control what type of transformation is used by passing `useTPS` boolean parameter to `transformBGSCoordinates()`. All other transformations are done directly as the transformation parameters are known. Precision is arround `10cm`.
+Transformations between BGS coordinate systems are done by calculating transformation parameters using TPS or Affine transformation based on predefined control points ([ControlPoints namespace](https://github.com/bojko108/transformations/tree/master/src/controlPoints)). You can control what type of transformation is used by passing `useTPS` boolean parameter to `BGSCoordinates.transform()`. All other transformations are done directly as the transformation parameters are known. Precision is arround `10cm`.
 
 ## Install
 
-You can install it with NPM (`npm install transformations`) or Yarn (`yarn add transformations`) and then:
+You can install it with NPM (`npm install transformations`) or Yarn (`yarn add transformations`) and then import a desired transformation function:
 
 ```js
-import { Transformations } from 'transformations';
+import { transformGeographicToUTM } from 'transformations';
 
-const tr = new Transformations();
 const input = [42.450682, 24.749747];
-const result = tr.transformGeographicToUTM(input);
+const result = transformGeographicToUTM(input);
 ```
 
 ### Ellipsoids
@@ -103,70 +102,70 @@ import { projections } from 'transformations';
 ### Transform between geographic coordinates and projected in Lambert projection
 
 ```js
-const tr = new Transformations();
+import { transformGeographicToLambert, transformLambertToGeographic } from 'transformations';
 
 let input = [42.7589996, 25.3799991];
-let result = tr.transformGeographicToLambert(input);
+let result = transformGeographicToLambert(input);
 // result is: 4735953.342, 490177.508
 
 let input = [4735953.349, 490177.508;
-let result = tr.transformLambertToGeographic(input);
+let result = transformLambertToGeographic(input);
 // result is: 42.7589997, 25.3799991
 ```
 
 ### Transform between geographic coordinates and projected in UTM
 
 ```js
-const tr = new Transformations();
+import { transformGeographicToUTM, transformUTMToGeographic } from 'transformations';
 
 let input = [42.450682, 24.749747];
-let result = tr.transformGeographicToUTM(input);
+let result = transformGeographicToUTM(input);
 // result is: 4702270.178, 314955.869
 
 let input = [4702270.179, 314955.869];
-let result = tr.transformUTMToGeographic(input);
+let result = transformUTMToGeographic(input);
 // result is: 42.450682, 24.749747
 ```
 
 ### Transform between geographic coordinates and projected in Gauss–Krüger
 
 ```js
-const tr = new Transformations();
+import { transformGeographicToGauss, transformGaussToGeographic } from 'transformations';
 
 let input = [42.7602978166667, 25.3824052611111];
-let result = tr.transformGeographicToGauss(input);
+let result = transformGeographicToGauss(input);
 // result is: 4736629.503, 8613154.606
 
 let input = [4736629.503, 8613154.607);
-let result = tr.transformGaussToGeographic(input);
+let result = transformGaussToGeographic(input);
 // result is: 42.7602978, 25.38240528
 ```
 
 ### Transform between geographic coordinates and projected in Web Mercator
 
 ```js
-const tr = new Transformations();
+import { transformGeographicToWebMercator, transformWebMercatorToGeographic } from 'transformations';
 
 let input = [42.450682, 24.749747];
-let result = tr.transformGeographicToWebMercator(input);
+let result = transformGeographicToWebMercator(input);
 // result is: 2755129.233, 5228730.328
 
 let input = [2755129.23, 5228730.33];
-let result = tr.transformWebMercatorToGeographic(input);
+let result = transformWebMercatorToGeographic(input);
 // result is: 42.4506820, 24.7497470
 ```
 
 ### Transform between geographic and geocentric coordinates
 
 ```js
-const tr = new Transformations();
+import { transformGeographicToGeocentric, transformGeocentricToGeographic } from 'transformations';
 
 let input = [42.450682, 24.749747];
-let result = tr.transformGeographicToGeocentric(input);
+let result = transformGeographicToGeocentric(input);
 // result is: X: 4280410.654, 1973273.422, 4282674.061
 
 let input = [4280410.654, 1973273.422, 4282674.061];
-let result = tr.transformGeocentricToGeographic(input);
+let result = transformGeocentricToGeographic(input);
 // result is: 42.450682, 24.749747
 ```
 
@@ -175,94 +174,102 @@ let result = tr.transformGeocentricToGeographic(input);
 - BGS 1930
 
 ```js
-const tr = new Transformations();
+import { BGSCoordinates } from 'transformations';
+
+const bgs = new BGSCoordinates();
 
 let input = [4728966.163, 8607005.227];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_1930_24, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, enumProjection.BGS_1930_24, enumProjection.BGS_2005_KK);
 // result is: 4728401.432, 483893.508
 
 let input = [4728401.432, 483893.508];
-let result = tr.transformBGSCoordinates(input,  enumProjection.BGS_2005_KK, enumProjection.BGS_1930_24);
+let result = bgs.transform(input,  enumProjection.BGS_2005_KK, enumProjection.BGS_1930_24);
 // result is: 4728966.153, 8607005.214
 ```
 
 - BGS 1950
 
 ```js
-const tr = new Transformations();
+import { BGSCoordinates } from 'transformations';
+
+const bgs = new BGSCoordinates();
 
 let input = [4729331.175, 8606933.614];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_1950_3_24, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, enumProjection.BGS_1950_3_24, enumProjection.BGS_2005_KK);
 // result is: 4728401.442, 483893.521
 
 let input = [4728401.432, 483893.508];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1950_3_24);
+let result = tr.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1950_3_24);
 // result is: 4729331.165, 8606933.601
 ```
 
 - BGS Sofia
 
 ```js
-const tr = new Transformations();
+import { BGSCoordinates } from 'transformations';
+
+const bgs = new BGSCoordinates();
 
 let input = [48276.705, 45420.988];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_SOFIA, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, enumProjection.BGS_SOFIA, enumProjection.BGS_2005_KK);
 // result is: 4730215.221, 322402.929
 
 let input = [4730215.229, 322402.935];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_2005_KK, enumProjection.BGS_SOFIA);
+let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_SOFIA);
 // result is: 48276.713, 45420.993
 ```
 
 - BGS 1970
 
 ```js
-const tr = new Transformations();
+import { BGSCoordinates } from 'transformations';
+
+const bgs = new BGSCoordinates();
 
 let input = [4725270.684, 8515734.475];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_1970_K3, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, enumProjection.BGS_1970_K3, enumProjection.BGS_2005_KK);
 // result is: 4816275.688, 332535.346
 
 let input = [4816275.680, 332535.401];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K3);
+let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K3);
 // result is: 4725270.677, 8515734.530
 
 let input = [4613479.192, 9493233.633];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_1970_K5, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, enumProjection.BGS_1970_K5, enumProjection.BGS_2005_KK);
 // result is: 4679669.824, 569554.912
 
 let input = [4679669.825, 569554.918];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K5);
+let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K5);
 // result is: 4613479.193, 9493233.639
 
 let input = [4708089.898, 9570974.988];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_1970_K7, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, enumProjection.BGS_1970_K7, enumProjection.BGS_2005_KK);
 // result is: 4810276.410, 626498.618
 
 let input = [4810276.431, 626498.611];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K7);
+let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K7);
 // result is: 4708089.919, 9570974.981
 
 let input = [4547844.976, 8508858.179];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_1970_K9, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, enumProjection.BGS_1970_K9, enumProjection.BGS_2005_KK);
 // result is: 4675440.859, 330568.410
 
 let input = [4675440.847, 330568.434];
-let result = tr.transformBGSCoordinates(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K9);
+let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K9);
 // result is: 4547844.965, 8508858.203
 ```
 
 ### Format decimal degrees from/to degrees, minutes and seconds
 
 ```js
-const tr = new Transformations();
+import { convertDecimalDegreesToDMS, convertDMStoDecimalDegrees } from 'transformations';
 
 let latitude = 42.336542;
-let dms = tr.ConvertDecimalDegreesToDMS(latitude);
+let dms = convertDecimalDegreesToDMS(latitude);
 // dms is: "422011.5512000000052"
 
 let dms = "422011.5512000000052";
-let result = tr.ConvertDMStoDecimalDegrees(dms);
+let result = convertDMStoDecimalDegrees(dms);
 // result is: 42.336542
 ```
 

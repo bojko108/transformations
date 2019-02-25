@@ -1,5 +1,5 @@
 /** 
- * transformations - v1.0.1
+ * transformations - v1.1.0
  * description: Transform coordinates between various coordinate systems used in Bulgaria.
  * author: bojko108 <bojko108@gmail.com>
  * 
@@ -245,99 +245,6 @@ var projections = Object.freeze({
 	UTM34N: UTM34N,
 	UTM35N: UTM35N
 });
-
-function toRad(degrees) {
-  return (degrees * Math.PI) / 180;
-}
-function toDeg(radians) {
-  return (radians / Math.PI) * 180;
-}
-function toDMS(decimalDegrees) {
-  let input = decimalDegrees,
-    minpart,
-    min,
-    sec;
-  decimalDegrees = Math.floor(decimalDegrees);
-  minpart = (input - decimalDegrees) * 60;
-  min = Math.floor(minpart);
-  sec = (minpart - min) * 60;
-  if (min < 10) min = `0${min}`;
-  if (sec < 10) {
-    sec = `0${sec}`;
-  } else {
-    sec = sec.toFixed(4);
-  }
-  return `${pad(decimalDegrees)}${pad(min)}${pad(sec)}`;
-}
-function toDD(dms) {
-  let deg, min, sec;
-  dms = dms.toString();
-  deg = dms.substring(0, 2);
-  min = dms.substring(2, 4);
-  sec = dms.replace(`${deg}${min}`, '');
-  return parseFloat(deg) + parseFloat(min) / 60 + parseFloat(sec) / 60 / 60;
-}
-function pad(number, size = 2) {
-  let s = number.toString();
-  while (s.length < size) {
-    s = '0' + s;
-  }
-  return s;
-}
-function arcLengthOfMeridian(latitude, ellipsoid) {
-  const m0 = ellipsoid.a * (1 - ellipsoid.e2),
-    m2 = (3 / 2) * (ellipsoid.e2 * m0),
-    m4 = (5 / 4) * (ellipsoid.e2 * m2),
-    m6 = (7 / 6) * (ellipsoid.e2 * m4),
-    m8 = (9 / 8) * (ellipsoid.e2 * m6);
-  const a0 = m0 + 0.5 * m2 + 0.375 * m4 + 0.3125 * m6 + 0.2734375 * m8,
-    a2 = 0.5 * m2 + 0.5 * m4 + 0.46875 * m6 + 0.4375 * m8,
-    a4 = 0.125 * m4 + 0.1875 * m6 + 0.21875 * m8,
-    a6 = 0.03125 * m6 + 0.0625 * m8;
-  return (
-    a0 * latitude -
-    Math.sin(latitude) *
-      Math.cos(latitude) *
-      (a2 - a4 + a6 + (2 * a4 - (16 / 3) * a6) * Math.pow(Math.sin(latitude), 2) + (16 / 3) * (a6 * Math.pow(Math.sin(latitude), 4)))
-  );
-}
-function footpointLatitude(northing, ellipsoid) {
-  let x_, alpha_, beta_, gamma_, delta_, epsilon_;
-  alpha_ = ((ellipsoid.a + ellipsoid.b) / 2.0) * (1 + Math.pow(ellipsoid.n, 2.0) / 4 + Math.pow(ellipsoid.n, 4.0) / 64);
-  x_ = northing / alpha_;
-  beta_ = (3.0 * ellipsoid.n) / 2.0 + (-27.0 * Math.pow(ellipsoid.n, 3.0)) / 32.0 + (269.0 * Math.pow(ellipsoid.n, 5.0)) / 512.0;
-  gamma_ = (21.0 * Math.pow(ellipsoid.n, 2.0)) / 16.0 + (-55.0 * Math.pow(ellipsoid.n, 4.0)) / 32.0;
-  delta_ = (151.0 * Math.pow(ellipsoid.n, 3.0)) / 96.0 + (-417.0 * Math.pow(ellipsoid.n, 5.0)) / 128.0;
-  epsilon_ = (1097.0 * Math.pow(ellipsoid.n, 4.0)) / 512.0;
-  return x_ + beta_ * Math.sin(2.0 * x_) + gamma_ * Math.sin(4.0 * x_) + delta_ * Math.sin(6.0 * x_) + epsilon_ * Math.sin(8.0 * x_);
-}
-function calculateQParameter(latitude, ellipsoid) {
-  return (
-    (1 / 2) *
-    (Math.log((1 + Math.sin(latitude)) / (1 - Math.sin(latitude))) -
-      ellipsoid.e * Math.log((1 + ellipsoid.e * Math.sin(latitude)) / (1 - ellipsoid.e * Math.sin(latitude))))
-  );
-}
-function calculateWParameter(latitude, ellipsoid) {
-  return Math.sqrt(1 - ellipsoid.e2 * Math.pow(Math.sin(latitude), 2));
-}
-function calculateCentralPointX(lat0, ellipsoid) {
-  const m0 = ellipsoid.a * (1 - ellipsoid.e2),
-    m2 = 1.5 * ellipsoid.e2 * m0,
-    m4 = 1.25 * ellipsoid.e2 * m2,
-    m6 = (7 / 6) * (ellipsoid.e2 * m4),
-    m8 = 1.125 * ellipsoid.e2 * m6,
-    a0 = m0 + 0.5 * m2 + 0.375 * m4 + 0.3125 * m6 + 0.2734375 * m8,
-    a2 = 0.5 * m2 + 0.5 * m4 + 0.46875 * m6 + 0.4375 * m8,
-    a4 = 0.125 * m4 + 0.1875 * m6 + 0.21875 * m8,
-    a6 = 0.03125 * m6 + 0.0625 * m8;
-  return (
-    a0 * lat0 -
-    Math.sin(lat0) *
-      Math.cos(lat0) *
-      (a2 - a4 + a6 + (2 * a4 - (16 / 3) * a6) * Math.pow(Math.sin(lat0), 2) + (16 / 3) * a6 * Math.pow(Math.sin(lat0), 4))
-  );
-}
 
 function sortKD(ids, coords, nodeSize, left, right, depth) {
     if (right - left <= nodeSize) return;
@@ -17740,32 +17647,30 @@ unwrapExports(transformationModels);
 var transformationModels_1 = transformationModels.Affine;
 var transformationModels_2 = transformationModels.TPS;
 
-class Transformations {
-  constructor(useControlPoints = true) {
-    if (useControlPoints) {
-      this._controlPoints = {
-        [BGS_1930_24.name]: new BGS193024(),
-        [BGS_1930_27.name]: new BGS193027(),
-        [BGS_1950_3_24.name]: new BGS1950324(),
-        [BGS_1950_3_27.name]: new BGS1950327(),
-        [BGS_1950_6_21.name]: new BGS1950621(),
-        [BGS_1950_6_27.name]: new BGS1950627(),
-        [BGS_1970_К3.name]: new BGS1970K3(),
-        [BGS_1970_К5.name]: new BGS1970K5(),
-        [BGS_1970_К7.name]: new BGS1970K7(),
-        [BGS_1970_К9.name]: new BGS1970K9(),
-        [BGS_2005_KK.name]: new BGS2005KK()
-      };
-    }
+class BGSCoordinates {
+  constructor() {
+    this._controlPoints = {
+      [BGS_1930_24.name]: new BGS193024(),
+      [BGS_1930_27.name]: new BGS193027(),
+      [BGS_1950_3_24.name]: new BGS1950324(),
+      [BGS_1950_3_27.name]: new BGS1950327(),
+      [BGS_1950_6_21.name]: new BGS1950621(),
+      [BGS_1950_6_27.name]: new BGS1950627(),
+      [BGS_1970_К3.name]: new BGS1970K3(),
+      [BGS_1970_К5.name]: new BGS1970K5(),
+      [BGS_1970_К7.name]: new BGS1970K7(),
+      [BGS_1970_К9.name]: new BGS1970K9(),
+      [BGS_2005_KK.name]: new BGS2005KK()
+    };
   }
-  transformBGSCoordinatesArray(
+  transformArray(
     inputPoints,
     extent = null,
     inputProjection = BGS_1970_К9,
     outputProjection = BGS_2005_KK,
     useTPS = true
   ) {}
-  transformBGSCoordinates(inputPoint, inputProjection = BGS_1970_К9, outputProjection = BGS_2005_KK, useTPS = true) {
+  transform(inputPoint, inputProjection = BGS_1970_К9, outputProjection = BGS_2005_KK, useTPS = true) {
     const distance = 20000;
     if (inputProjection.name === BGS_SOFIA.name) {
       inputPoint[0] += BGS_SOFIA.x0;
@@ -17792,292 +17697,400 @@ class Transformations {
     }
     return resultPoint;
   }
-  transformGeographicToLambert(coordinates, outputProjection = BGS_2005_KK, outputEllipsoid = WGS84) {
-    const isArray = Array.isArray(coordinates[0]);
-    let points = isArray ? coordinates : [coordinates];
-    const Lon0 = toRad(outputProjection.Lon0),
-      Lat1 = toRad(outputProjection.Lat1),
-      Lat2 = toRad(outputProjection.Lat2),
-      w1 = calculateWParameter(Lat1, outputEllipsoid),
-      w2 = calculateWParameter(Lat2, outputEllipsoid),
-      Q1 = calculateQParameter(Lat1, outputEllipsoid),
-      Q2 = calculateQParameter(Lat2, outputEllipsoid),
-      Lat0 = Math.asin(Math.log((w2 * Math.cos(Lat1)) / (w1 * Math.cos(Lat2))) / (Q2 - Q1)),
-      Q0 = calculateQParameter(Lat0, outputEllipsoid),
-      Re = (outputEllipsoid.a * Math.cos(Lat1) * Math.exp(Q1 * Math.sin(Lat0))) / w1 / Math.sin(Lat0),
-      R0 = Re / Math.exp(Q0 * Math.sin(Lat0)),
-      x0 = calculateCentralPointX(Lat0, outputEllipsoid);
-    let result = points.map(point => {
-      let x = 0.0,
-        y = 0.0,
-        R = 0.0,
-        Q = 0.0,
-        gama = 0.0,
-        lat = toRad(point[0]),
-        lon = toRad(point[1]);
-      let A = Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat))),
-        B = outputEllipsoid.e * Math.log((1 + outputEllipsoid.e * Math.sin(lat)) / (1 - outputEllipsoid.e * Math.sin(lat)));
-      Q = (A - B) / 2;
-      R = Re / Math.exp(Q * Math.sin(Lat0));
-      gama = (lon - Lon0) * Math.sin(Lat0);
-      x = R0 + x0 - R * Math.cos(gama);
-      y = outputProjection.y0 + R * Math.sin(gama);
-      return [x, y];
+}
+
+function toRad(degrees) {
+  return (degrees * Math.PI) / 180;
+}
+function toDeg(radians) {
+  return (radians / Math.PI) * 180;
+}
+function toDMS(decimalDegrees) {
+  let input = decimalDegrees,
+    minpart,
+    min,
+    sec;
+  decimalDegrees = Math.floor(decimalDegrees);
+  minpart = (input - decimalDegrees) * 60;
+  min = Math.floor(minpart);
+  sec = (minpart - min) * 60;
+  if (min < 10) min = `0${min}`;
+  if (sec < 10) {
+    sec = `0${sec}`;
+  } else {
+    sec = sec.toFixed(4);
+  }
+  return `${pad(decimalDegrees)}${pad(min)}${pad(sec)}`;
+}
+function toDD(dms) {
+  let deg, min, sec;
+  dms = dms.toString();
+  deg = dms.substring(0, 2);
+  min = dms.substring(2, 4);
+  sec = dms.replace(`${deg}${min}`, '');
+  return parseFloat(deg) + parseFloat(min) / 60 + parseFloat(sec) / 60 / 60;
+}
+function pad(number, size = 2) {
+  let s = number.toString();
+  while (s.length < size) {
+    s = '0' + s;
+  }
+  return s;
+}
+function arcLengthOfMeridian(latitude, ellipsoid) {
+  const m0 = ellipsoid.a * (1 - ellipsoid.e2),
+    m2 = (3 / 2) * (ellipsoid.e2 * m0),
+    m4 = (5 / 4) * (ellipsoid.e2 * m2),
+    m6 = (7 / 6) * (ellipsoid.e2 * m4),
+    m8 = (9 / 8) * (ellipsoid.e2 * m6);
+  const a0 = m0 + 0.5 * m2 + 0.375 * m4 + 0.3125 * m6 + 0.2734375 * m8,
+    a2 = 0.5 * m2 + 0.5 * m4 + 0.46875 * m6 + 0.4375 * m8,
+    a4 = 0.125 * m4 + 0.1875 * m6 + 0.21875 * m8,
+    a6 = 0.03125 * m6 + 0.0625 * m8;
+  return (
+    a0 * latitude -
+    Math.sin(latitude) *
+      Math.cos(latitude) *
+      (a2 - a4 + a6 + (2 * a4 - (16 / 3) * a6) * Math.pow(Math.sin(latitude), 2) + (16 / 3) * (a6 * Math.pow(Math.sin(latitude), 4)))
+  );
+}
+function footpointLatitude(northing, ellipsoid) {
+  let x_, alpha_, beta_, gamma_, delta_, epsilon_;
+  alpha_ = ((ellipsoid.a + ellipsoid.b) / 2.0) * (1 + Math.pow(ellipsoid.n, 2.0) / 4 + Math.pow(ellipsoid.n, 4.0) / 64);
+  x_ = northing / alpha_;
+  beta_ = (3.0 * ellipsoid.n) / 2.0 + (-27.0 * Math.pow(ellipsoid.n, 3.0)) / 32.0 + (269.0 * Math.pow(ellipsoid.n, 5.0)) / 512.0;
+  gamma_ = (21.0 * Math.pow(ellipsoid.n, 2.0)) / 16.0 + (-55.0 * Math.pow(ellipsoid.n, 4.0)) / 32.0;
+  delta_ = (151.0 * Math.pow(ellipsoid.n, 3.0)) / 96.0 + (-417.0 * Math.pow(ellipsoid.n, 5.0)) / 128.0;
+  epsilon_ = (1097.0 * Math.pow(ellipsoid.n, 4.0)) / 512.0;
+  return x_ + beta_ * Math.sin(2.0 * x_) + gamma_ * Math.sin(4.0 * x_) + delta_ * Math.sin(6.0 * x_) + epsilon_ * Math.sin(8.0 * x_);
+}
+function calculateQParameter(latitude, ellipsoid) {
+  return (
+    (1 / 2) *
+    (Math.log((1 + Math.sin(latitude)) / (1 - Math.sin(latitude))) -
+      ellipsoid.e * Math.log((1 + ellipsoid.e * Math.sin(latitude)) / (1 - ellipsoid.e * Math.sin(latitude))))
+  );
+}
+function calculateWParameter(latitude, ellipsoid) {
+  return Math.sqrt(1 - ellipsoid.e2 * Math.pow(Math.sin(latitude), 2));
+}
+function calculateCentralPointX(lat0, ellipsoid) {
+  const m0 = ellipsoid.a * (1 - ellipsoid.e2),
+    m2 = 1.5 * ellipsoid.e2 * m0,
+    m4 = 1.25 * ellipsoid.e2 * m2,
+    m6 = (7 / 6) * (ellipsoid.e2 * m4),
+    m8 = 1.125 * ellipsoid.e2 * m6,
+    a0 = m0 + 0.5 * m2 + 0.375 * m4 + 0.3125 * m6 + 0.2734375 * m8,
+    a2 = 0.5 * m2 + 0.5 * m4 + 0.46875 * m6 + 0.4375 * m8,
+    a4 = 0.125 * m4 + 0.1875 * m6 + 0.21875 * m8,
+    a6 = 0.03125 * m6 + 0.0625 * m8;
+  return (
+    a0 * lat0 -
+    Math.sin(lat0) *
+      Math.cos(lat0) *
+      (a2 - a4 + a6 + (2 * a4 - (16 / 3) * a6) * Math.pow(Math.sin(lat0), 2) + (16 / 3) * a6 * Math.pow(Math.sin(lat0), 4))
+  );
+}
+
+const convertDecimalDegreesToDMS = function(decimalDegrees) {
+  if (Array.isArray(decimalDegrees)) {
+    return decimalDegrees.map(dd => {
+      return toDMS(dd);
     });
-    return isArray ? result : result[0];
+  } else {
+    return toDMS(decimalDegrees);
   }
-  transformLambertToGeographic(coordinates, inputProjection = BGS_2005_KK, inputEllipsoid = WGS84) {
-    const isArray = Array.isArray(coordinates[0]);
-    let points = isArray ? coordinates : [coordinates];
-    const Lon0 = toRad(inputProjection.Lon0),
-      Lat1 = toRad(inputProjection.Lat1),
-      Lat2 = toRad(inputProjection.Lat2),
-      w1 = calculateWParameter(Lat1, inputEllipsoid),
-      w2 = calculateWParameter(Lat2, inputEllipsoid),
-      Q1 = calculateQParameter(Lat1, inputEllipsoid),
-      Q2 = calculateQParameter(Lat2, inputEllipsoid),
-      Lat0 = Math.asin(Math.log((w2 * Math.cos(Lat1)) / (w1 * Math.cos(Lat2))) / (Q2 - Q1)),
-      Q0 = calculateQParameter(Lat0, inputEllipsoid),
-      Re = (inputEllipsoid.a * Math.cos(Lat1) * Math.exp(Q1 * Math.sin(Lat0))) / w1 / Math.sin(Lat0),
-      R0 = Re / Math.exp(Q0 * Math.sin(Lat0)),
-      x0 = calculateCentralPointX(Lat0, inputEllipsoid);
-    let result = points.map(point => {
-      let lat = 0.0,
-        lon = 0.0,
-        f1 = 0.0,
-        f2 = 0.0,
-        Latp = 0.0,
-        R = 0.0,
-        Q = 0.0,
-        gama = 0.0,
-        x = point[0],
-        y = point[1];
-      R = Math.sqrt(Math.pow(y - inputProjection.y0, 2) + Math.pow(R0 + x0 - x, 2));
-      Q = Math.log(Re / R) / Math.sin(Lat0);
-      Latp = Math.asin((Math.exp(2 * Q) - 1) / (Math.exp(2 * Q) + 1));
-      for (let i = 0; i < 10; i++) {
-        f1 =
-          (Math.log((1 + Math.sin(Latp)) / (1 - Math.sin(Latp))) -
-            inputEllipsoid.e * Math.log((1 + inputEllipsoid.e * Math.sin(Latp)) / (1 - inputEllipsoid.e * Math.sin(Latp)))) /
-            2 -
-          Q;
-        f2 = 1 / (1 - Math.pow(Math.sin(Latp), 2)) - inputEllipsoid.e2 / (1 - inputEllipsoid.e2 * Math.pow(Math.sin(Latp), 2));
-        lat = Math.asin(Math.sin(Latp) - f1 / f2);
-        if (Math.abs(lat - Latp) <= 0.0000000001) {
-          break;
-        } else {
-          Latp = lat;
-        }
-      }
-      gama = Math.atan((y - inputProjection.y0) / (R0 + x0 - x));
-      lon = gama / Math.sin(Lat0) + Lon0;
-      return [toDeg(lat), toDeg(lon)];
+};
+const convertDMStoDecimalDegrees = function(dms) {
+  if (Array.isArray(dms)) {
+    return dms.map(d => {
+      return toDMS(d);
     });
-    return isArray ? result : result[0];
+  } else {
+    return toDD(dms);
   }
-  transformGeographicToUTM(coordinates, outputUtmProjection = UTM35N, inputEllipsoid = WGS84) {
-    return this.transformGeographicToGauss(coordinates, outputUtmProjection, inputEllipsoid);
+};
+
+const transformGeographicToUTM = function(coordinates, outputUtmProjection = UTM35N, inputEllipsoid = WGS84) {
+  return transformGeographicToGauss(coordinates, outputUtmProjection, inputEllipsoid);
+};
+const transformUTMToGeographic = function(coordinates, inputUtmProjection = UTM35N, outputEllipsoid = WGS84) {
+  return transformGaussToGeographic(coordinates, inputUtmProjection, outputEllipsoid);
+};
+const transformGeographicToGauss = function(coordinates, outputProjection = BGS_1930_24, inputEllipsoid = HAYFORD) {
+  const isArray = Array.isArray(coordinates[0]);
+  let points = isArray ? coordinates : [coordinates];
+  const Lon0 = toRad(outputProjection.Lon0);
+  let result = points.map(point => {
+    const latitude = toRad(point[0]);
+    const longitude = toRad(point[1]);
+    let easting = 0.0,
+      northing = 0.0;
+    let phi = arcLengthOfMeridian(latitude, inputEllipsoid),
+      nu2 = inputEllipsoid.ep2 * Math.pow(Math.cos(latitude), 2.0),
+      n = Math.pow(inputEllipsoid.a, 2.0) / (inputEllipsoid.b * Math.sqrt(1 + nu2)),
+      t = Math.tan(latitude),
+      t2 = t * t,
+      l = longitude - Lon0,
+      coef13 = 1.0 - t2 + nu2,
+      coef14 = 5.0 - t2 + 9 * nu2 + 4.0 * (nu2 * nu2),
+      coef15 = 5.0 - 18.0 * t2 + t2 * t2 + 14.0 * nu2 - 58.0 * t2 * nu2,
+      coef16 = 61.0 - 58.0 * t2 + t2 * t2 + 270.0 * nu2 - 330.0 * t2 * nu2,
+      coef17 = 61.0 - 479.0 * t2 + 179.0 * (t2 * t2) - t2 * t2 * t2,
+      coef18 = 1385.0 - 3111.0 * t2 + 543.0 * (t2 * t2) - t2 * t2 * t2;
+    easting =
+      n * Math.cos(latitude) * l +
+      (n / 6.0) * Math.pow(Math.cos(latitude), 3.0) * coef13 * Math.pow(l, 3.0) +
+      (n / 120.0) * Math.pow(Math.cos(latitude), 5.0) * coef15 * Math.pow(l, 5.0) +
+      (n / 5040.0) * Math.pow(Math.cos(latitude), 7.0) * coef17 * Math.pow(l, 7.0);
+    northing =
+      phi +
+      (t / 2.0) * n * Math.pow(Math.cos(latitude), 2.0) * Math.pow(l, 2.0) +
+      (t / 24.0) * n * Math.pow(Math.cos(latitude), 4.0) * coef14 * Math.pow(l, 4.0) +
+      (t / 720.0) * n * Math.pow(Math.cos(latitude), 6.0) * coef16 * Math.pow(l, 6.0) +
+      (t / 40320.0) * n * Math.pow(Math.cos(latitude), 8.0) * coef18 * Math.pow(l, 8.0);
+    northing *= outputProjection.scale;
+    easting *= outputProjection.scale;
+    easting += outputProjection.y0;
+    return [northing, easting];
+  });
+  return isArray ? result : result[0];
+};
+const transformGaussToGeographic = function(coordinates, inputProjection = BGS_1930_24, outputEllipsoid = HAYFORD) {
+  const isArray = Array.isArray(coordinates[0]);
+  let points = isArray ? coordinates : [coordinates];
+  const Lon0 = toRad(inputProjection.Lon0);
+  let result = points.map(point => {
+    let latitude = 0.0,
+      longitude = 0.0;
+    let easting = point[1];
+    easting -= inputProjection.y0;
+    easting /= inputProjection.scale;
+    let northing = point[0];
+    northing /= inputProjection.scale;
+    let phif,
+      Nf,
+      Nfpow,
+      nuf2,
+      tf,
+      tf2,
+      tf4,
+      cf,
+      x1frac,
+      x2frac,
+      x3frac,
+      x4frac,
+      x5frac,
+      x6frac,
+      x7frac,
+      x8frac,
+      x2poly,
+      x3poly,
+      x4poly,
+      x5poly,
+      x6poly,
+      x7poly,
+      x8poly;
+    phif = footpointLatitude(northing, outputEllipsoid);
+    cf = Math.cos(phif);
+    nuf2 = outputEllipsoid.ep2 * Math.pow(cf, 2.0);
+    Nf = Math.pow(outputEllipsoid.a, 2.0) / (outputEllipsoid.b * Math.sqrt(1 + nuf2));
+    Nfpow = Nf;
+    tf = Math.tan(phif);
+    tf2 = tf * tf;
+    tf4 = tf2 * tf2;
+    x1frac = 1.0 / (Nfpow * cf);
+    Nfpow *= Nf;
+    x2frac = tf / (2.0 * Nfpow);
+    Nfpow *= Nf;
+    x3frac = 1.0 / (6.0 * Nfpow * cf);
+    Nfpow *= Nf;
+    x4frac = tf / (24.0 * Nfpow);
+    Nfpow *= Nf;
+    x5frac = 1.0 / (120.0 * Nfpow * cf);
+    Nfpow *= Nf;
+    x6frac = tf / (720.0 * Nfpow);
+    Nfpow *= Nf;
+    x7frac = 1.0 / (5040.0 * Nfpow * cf);
+    Nfpow *= Nf;
+    x8frac = tf / (40320.0 * Nfpow);
+    x2poly = -1 - nuf2;
+    x3poly = -1 - 2 * tf2 - nuf2;
+    x4poly = 5.0 + 3.0 * tf2 + 6.0 * nuf2 - 6.0 * tf2 * nuf2 - 3.0 * (nuf2 * nuf2) - 9.0 * tf2 * (nuf2 * nuf2);
+    x5poly = 5.0 + 28.0 * tf2 + 24.0 * tf4 + 6.0 * nuf2 + 8.0 * tf2 * nuf2;
+    x6poly = -61.0 - 90.0 * tf2 - 45.0 * tf4 - 107.0 * nuf2 + 162.0 * tf2 * nuf2;
+    x7poly = -61.0 - 662.0 * tf2 - 1320.0 * tf4 - 720.0 * (tf4 * tf2);
+    x8poly = 1385.0 + 3633.0 * tf2 + 4095.0 * tf4 + 1575 * (tf4 * tf2);
+    latitude =
+      phif +
+      x2frac * x2poly * Math.pow(easting, 2) +
+      x4frac * x4poly * Math.pow(easting, 4.0) +
+      x6frac * x6poly * Math.pow(easting, 6.0) +
+      x8frac * x8poly * Math.pow(easting, 8.0);
+    longitude =
+      Lon0 +
+      x1frac * easting +
+      x3frac * x3poly * Math.pow(easting, 3.0) +
+      x5frac * x5poly * Math.pow(easting, 5.0) +
+      x7frac * x7poly * Math.pow(easting, 7.0);
+    return [toDeg(latitude), toDeg(longitude)];
+  });
+  return isArray ? result : result[0];
+};
+
+const transformGeographicToGeocentric = function(coordinates, outputEllipsoid = WGS84) {
+  const latitude = toRad(coordinates[0]),
+    longitude = toRad(coordinates[1]),
+    h = coordinates[2] || 0.0,
+    N =
+      Math.pow(outputEllipsoid.a, 2) /
+      Math.sqrt(Math.pow(outputEllipsoid.a, 2) * Math.pow(Math.cos(latitude), 2) + Math.pow(outputEllipsoid.b, 2) * Math.pow(Math.sin(latitude), 2));
+  let X = (N + h) * Math.cos(latitude) * Math.cos(longitude),
+    Y = (N + h) * Math.cos(latitude) * Math.sin(longitude),
+    Z = ((Math.pow(outputEllipsoid.b, 2) / Math.pow(outputEllipsoid.a, 2)) * N + h) * Math.sin(latitude);
+  return [X, Y, Z];
+};
+const transformGeocentricToGeographic = function(coordinates, inputEllipsoid = WGS84) {
+  const X = coordinates[0],
+    Y = coordinates[1],
+    Z = coordinates[2],
+    p = Math.sqrt(Math.pow(X, 2) + Math.pow(Y, 2)),
+    e2 = (Math.pow(inputEllipsoid.a, 2) - Math.pow(inputEllipsoid.b, 2)) / Math.pow(inputEllipsoid.a, 2);
+  let lat = 0.0,
+    lon = Math.atan(Y / X),
+    h = 0.0,
+    latp = (Z / p) * Math.pow(1 - e2, -1),
+    Np = 0.0;
+  for (let i = 0; i < 10; i++) {
+    Np =
+      Math.pow(inputEllipsoid.a, 2) /
+      Math.sqrt(Math.pow(inputEllipsoid.a, 2) * Math.pow(Math.cos(latp), 2) + Math.pow(inputEllipsoid.b, 2) * Math.pow(Math.sin(latp), 2));
+    h = p / Math.cos(latp) - Np;
+    lat = Math.atan((Z / p) * Math.pow(1 - e2 * (Np / (Np + h)), -1));
+    if (Math.abs(lat - latp) <= 0.0000000001) {
+      break;
+    } else {
+      latp = lat;
+    }
   }
-  transformUTMToGeographic(coordinates, inputUtmProjection = UTM35N, outputEllipsoid = WGS84) {
-    return this.transformGaussToGeographic(coordinates, inputUtmProjection, outputEllipsoid);
-  }
-  transformGeographicToGauss(coordinates, outputProjection = BGS_1930_24, inputEllipsoid = HAYFORD) {
-    const isArray = Array.isArray(coordinates[0]);
-    let points = isArray ? coordinates : [coordinates];
-    const Lon0 = toRad(outputProjection.Lon0);
-    let result = points.map(point => {
-      const latitude = toRad(point[0]);
-      const longitude = toRad(point[1]);
-      let easting = 0.0,
-        northing = 0.0;
-      let phi = arcLengthOfMeridian(latitude, inputEllipsoid),
-        nu2 = inputEllipsoid.ep2 * Math.pow(Math.cos(latitude), 2.0),
-        n = Math.pow(inputEllipsoid.a, 2.0) / (inputEllipsoid.b * Math.sqrt(1 + nu2)),
-        t = Math.tan(latitude),
-        t2 = t * t,
-        l = longitude - Lon0,
-        coef13 = 1.0 - t2 + nu2,
-        coef14 = 5.0 - t2 + 9 * nu2 + 4.0 * (nu2 * nu2),
-        coef15 = 5.0 - 18.0 * t2 + t2 * t2 + 14.0 * nu2 - 58.0 * t2 * nu2,
-        coef16 = 61.0 - 58.0 * t2 + t2 * t2 + 270.0 * nu2 - 330.0 * t2 * nu2,
-        coef17 = 61.0 - 479.0 * t2 + 179.0 * (t2 * t2) - t2 * t2 * t2,
-        coef18 = 1385.0 - 3111.0 * t2 + 543.0 * (t2 * t2) - t2 * t2 * t2;
-      easting =
-        n * Math.cos(latitude) * l +
-        (n / 6.0) * Math.pow(Math.cos(latitude), 3.0) * coef13 * Math.pow(l, 3.0) +
-        (n / 120.0) * Math.pow(Math.cos(latitude), 5.0) * coef15 * Math.pow(l, 5.0) +
-        (n / 5040.0) * Math.pow(Math.cos(latitude), 7.0) * coef17 * Math.pow(l, 7.0);
-      northing =
-        phi +
-        (t / 2.0) * n * Math.pow(Math.cos(latitude), 2.0) * Math.pow(l, 2.0) +
-        (t / 24.0) * n * Math.pow(Math.cos(latitude), 4.0) * coef14 * Math.pow(l, 4.0) +
-        (t / 720.0) * n * Math.pow(Math.cos(latitude), 6.0) * coef16 * Math.pow(l, 6.0) +
-        (t / 40320.0) * n * Math.pow(Math.cos(latitude), 8.0) * coef18 * Math.pow(l, 8.0);
-      northing *= outputProjection.scale;
-      easting *= outputProjection.scale;
-      easting += outputProjection.y0;
-      return [northing, easting];
-    });
-    return isArray ? result : result[0];
-  }
-  transformGaussToGeographic(coordinates, inputProjection = BGS_1930_24, outputEllipsoid = HAYFORD) {
-    const isArray = Array.isArray(coordinates[0]);
-    let points = isArray ? coordinates : [coordinates];
-    const Lon0 = toRad(inputProjection.Lon0);
-    let result = points.map(point => {
-      let latitude = 0.0,
-        longitude = 0.0;
-      let easting = point[1];
-      easting -= inputProjection.y0;
-      easting /= inputProjection.scale;
-      let northing = point[0];
-      northing /= inputProjection.scale;
-      let phif,
-        Nf,
-        Nfpow,
-        nuf2,
-        tf,
-        tf2,
-        tf4,
-        cf,
-        x1frac,
-        x2frac,
-        x3frac,
-        x4frac,
-        x5frac,
-        x6frac,
-        x7frac,
-        x8frac,
-        x2poly,
-        x3poly,
-        x4poly,
-        x5poly,
-        x6poly,
-        x7poly,
-        x8poly;
-      phif = footpointLatitude(northing, outputEllipsoid);
-      cf = Math.cos(phif);
-      nuf2 = outputEllipsoid.ep2 * Math.pow(cf, 2.0);
-      Nf = Math.pow(outputEllipsoid.a, 2.0) / (outputEllipsoid.b * Math.sqrt(1 + nuf2));
-      Nfpow = Nf;
-      tf = Math.tan(phif);
-      tf2 = tf * tf;
-      tf4 = tf2 * tf2;
-      x1frac = 1.0 / (Nfpow * cf);
-      Nfpow *= Nf;
-      x2frac = tf / (2.0 * Nfpow);
-      Nfpow *= Nf;
-      x3frac = 1.0 / (6.0 * Nfpow * cf);
-      Nfpow *= Nf;
-      x4frac = tf / (24.0 * Nfpow);
-      Nfpow *= Nf;
-      x5frac = 1.0 / (120.0 * Nfpow * cf);
-      Nfpow *= Nf;
-      x6frac = tf / (720.0 * Nfpow);
-      Nfpow *= Nf;
-      x7frac = 1.0 / (5040.0 * Nfpow * cf);
-      Nfpow *= Nf;
-      x8frac = tf / (40320.0 * Nfpow);
-      x2poly = -1 - nuf2;
-      x3poly = -1 - 2 * tf2 - nuf2;
-      x4poly = 5.0 + 3.0 * tf2 + 6.0 * nuf2 - 6.0 * tf2 * nuf2 - 3.0 * (nuf2 * nuf2) - 9.0 * tf2 * (nuf2 * nuf2);
-      x5poly = 5.0 + 28.0 * tf2 + 24.0 * tf4 + 6.0 * nuf2 + 8.0 * tf2 * nuf2;
-      x6poly = -61.0 - 90.0 * tf2 - 45.0 * tf4 - 107.0 * nuf2 + 162.0 * tf2 * nuf2;
-      x7poly = -61.0 - 662.0 * tf2 - 1320.0 * tf4 - 720.0 * (tf4 * tf2);
-      x8poly = 1385.0 + 3633.0 * tf2 + 4095.0 * tf4 + 1575 * (tf4 * tf2);
-      latitude =
-        phif +
-        x2frac * x2poly * Math.pow(easting, 2) +
-        x4frac * x4poly * Math.pow(easting, 4.0) +
-        x6frac * x6poly * Math.pow(easting, 6.0) +
-        x8frac * x8poly * Math.pow(easting, 8.0);
-      longitude =
-        Lon0 +
-        x1frac * easting +
-        x3frac * x3poly * Math.pow(easting, 3.0) +
-        x5frac * x5poly * Math.pow(easting, 5.0) +
-        x7frac * x7poly * Math.pow(easting, 7.0);
-      return [toDeg(latitude), toDeg(longitude)];
-    });
-    return isArray ? result : result[0];
-  }
-  transformGeographicToGeocentric(coordinates, outputEllipsoid = WGS84) {
-    const latitude = toRad(coordinates[0]),
-      longitude = toRad(coordinates[1]),
-      h = coordinates[2] || 0.0,
-      N =
-        Math.pow(outputEllipsoid.a, 2) /
-        Math.sqrt(
-          Math.pow(outputEllipsoid.a, 2) * Math.pow(Math.cos(latitude), 2) + Math.pow(outputEllipsoid.b, 2) * Math.pow(Math.sin(latitude), 2)
-        );
-    let X = (N + h) * Math.cos(latitude) * Math.cos(longitude),
-      Y = (N + h) * Math.cos(latitude) * Math.sin(longitude),
-      Z = ((Math.pow(outputEllipsoid.b, 2) / Math.pow(outputEllipsoid.a, 2)) * N + h) * Math.sin(latitude);
-    return [X, Y, Z];
-  }
-  transformGeocentricToGeographic(coordinates, inputEllipsoid = WGS84) {
-    const X = coordinates[0],
-      Y = coordinates[1],
-      Z = coordinates[2],
-      p = Math.sqrt(Math.pow(X, 2) + Math.pow(Y, 2)),
-      e2 = (Math.pow(inputEllipsoid.a, 2) - Math.pow(inputEllipsoid.b, 2)) / Math.pow(inputEllipsoid.a, 2);
+  return [toDeg(lat), toDeg(lon), h];
+};
+
+const transformGeographicToLambert = function(coordinates, outputProjection = BGS_2005_KK, outputEllipsoid = WGS84) {
+  const isArray = Array.isArray(coordinates[0]);
+  let points = isArray ? coordinates : [coordinates];
+  const Lon0 = toRad(outputProjection.Lon0),
+    Lat1 = toRad(outputProjection.Lat1),
+    Lat2 = toRad(outputProjection.Lat2),
+    w1 = calculateWParameter(Lat1, outputEllipsoid),
+    w2 = calculateWParameter(Lat2, outputEllipsoid),
+    Q1 = calculateQParameter(Lat1, outputEllipsoid),
+    Q2 = calculateQParameter(Lat2, outputEllipsoid),
+    Lat0 = Math.asin(Math.log((w2 * Math.cos(Lat1)) / (w1 * Math.cos(Lat2))) / (Q2 - Q1)),
+    Q0 = calculateQParameter(Lat0, outputEllipsoid),
+    Re = (outputEllipsoid.a * Math.cos(Lat1) * Math.exp(Q1 * Math.sin(Lat0))) / w1 / Math.sin(Lat0),
+    R0 = Re / Math.exp(Q0 * Math.sin(Lat0)),
+    x0 = calculateCentralPointX(Lat0, outputEllipsoid);
+  let result = points.map(point => {
+    let x = 0.0,
+      y = 0.0,
+      R = 0.0,
+      Q = 0.0,
+      gama = 0.0,
+      lat = toRad(point[0]),
+      lon = toRad(point[1]);
+    let A = Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat))),
+      B = outputEllipsoid.e * Math.log((1 + outputEllipsoid.e * Math.sin(lat)) / (1 - outputEllipsoid.e * Math.sin(lat)));
+    Q = (A - B) / 2;
+    R = Re / Math.exp(Q * Math.sin(Lat0));
+    gama = (lon - Lon0) * Math.sin(Lat0);
+    x = R0 + x0 - R * Math.cos(gama);
+    y = outputProjection.y0 + R * Math.sin(gama);
+    return [x, y];
+  });
+  return isArray ? result : result[0];
+};
+const transformLambertToGeographic = function(coordinates, inputProjection = BGS_2005_KK, inputEllipsoid = WGS84) {
+  const isArray = Array.isArray(coordinates[0]);
+  let points = isArray ? coordinates : [coordinates];
+  const Lon0 = toRad(inputProjection.Lon0),
+    Lat1 = toRad(inputProjection.Lat1),
+    Lat2 = toRad(inputProjection.Lat2),
+    w1 = calculateWParameter(Lat1, inputEllipsoid),
+    w2 = calculateWParameter(Lat2, inputEllipsoid),
+    Q1 = calculateQParameter(Lat1, inputEllipsoid),
+    Q2 = calculateQParameter(Lat2, inputEllipsoid),
+    Lat0 = Math.asin(Math.log((w2 * Math.cos(Lat1)) / (w1 * Math.cos(Lat2))) / (Q2 - Q1)),
+    Q0 = calculateQParameter(Lat0, inputEllipsoid),
+    Re = (inputEllipsoid.a * Math.cos(Lat1) * Math.exp(Q1 * Math.sin(Lat0))) / w1 / Math.sin(Lat0),
+    R0 = Re / Math.exp(Q0 * Math.sin(Lat0)),
+    x0 = calculateCentralPointX(Lat0, inputEllipsoid);
+  let result = points.map(point => {
     let lat = 0.0,
-      lon = Math.atan(Y / X),
-      h = 0.0,
-      latp = (Z / p) * Math.pow(1 - e2, -1),
-      Np = 0.0;
+      lon = 0.0,
+      f1 = 0.0,
+      f2 = 0.0,
+      Latp = 0.0,
+      R = 0.0,
+      Q = 0.0,
+      gama = 0.0,
+      x = point[0],
+      y = point[1];
+    R = Math.sqrt(Math.pow(y - inputProjection.y0, 2) + Math.pow(R0 + x0 - x, 2));
+    Q = Math.log(Re / R) / Math.sin(Lat0);
+    Latp = Math.asin((Math.exp(2 * Q) - 1) / (Math.exp(2 * Q) + 1));
     for (let i = 0; i < 10; i++) {
-      Np =
-        Math.pow(inputEllipsoid.a, 2) /
-        Math.sqrt(Math.pow(inputEllipsoid.a, 2) * Math.pow(Math.cos(latp), 2) + Math.pow(inputEllipsoid.b, 2) * Math.pow(Math.sin(latp), 2));
-      h = p / Math.cos(latp) - Np;
-      lat = Math.atan((Z / p) * Math.pow(1 - e2 * (Np / (Np + h)), -1));
-      if (Math.abs(lat - latp) <= 0.0000000001) {
+      f1 =
+        (Math.log((1 + Math.sin(Latp)) / (1 - Math.sin(Latp))) -
+          inputEllipsoid.e * Math.log((1 + inputEllipsoid.e * Math.sin(Latp)) / (1 - inputEllipsoid.e * Math.sin(Latp)))) /
+          2 -
+        Q;
+      f2 = 1 / (1 - Math.pow(Math.sin(Latp), 2)) - inputEllipsoid.e2 / (1 - inputEllipsoid.e2 * Math.pow(Math.sin(Latp), 2));
+      lat = Math.asin(Math.sin(Latp) - f1 / f2);
+      if (Math.abs(lat - Latp) <= 0.0000000001) {
         break;
       } else {
-        latp = lat;
+        Latp = lat;
       }
     }
-    return [toDeg(lat), toDeg(lon), h];
-  }
-  transformGeographicToWebMercator(coordinates) {
-    const latitude = coordinates[0],
-      longitude = coordinates[1],
-      halfRadius = Math.PI * SPHERE.a;
-    let x = (longitude * halfRadius) / 180,
-      y = Math.log(Math.tan(((90 + latitude) * Math.PI) / 360)) / (Math.PI / 180);
-    y = (y * halfRadius) / 180;
-    return [x, y];
-  }
-  transformWebMercatorToGeographic(coordinates) {
-    const x = coordinates[1],
-      y = coordinates[0],
-      halfRadius = Math.PI * SPHERE.a;
-    let longitude = (y / halfRadius) * 180,
-      latitude = (x / halfRadius) * 180;
-    latitude = (180 / Math.PI) * (2 * Math.atan(Math.exp((latitude * Math.PI) / 180)) - Math.PI / 2);
-    return [latitude, longitude];
-  }
-  ConvertDecimalDegreesToDMS(decimalDegrees) {
-    if (Array.isArray(decimalDegrees)) {
-      return decimalDegrees.map(dd => {
-        return toDMS(dd);
-      });
-    } else {
-      return toDMS(decimalDegrees);
-    }
-  }
-  ConvertDMStoDecimalDegrees(dms) {
-    if (Array.isArray(dms)) {
-      return dms.map(d => {
-        return toDMS(d);
-      });
-    } else {
-      return toDD(dms);
-    }
-  }
-}
+    gama = Math.atan((y - inputProjection.y0) / (R0 + x0 - x));
+    lon = gama / Math.sin(Lat0) + Lon0;
+    return [toDeg(lat), toDeg(lon)];
+  });
+  return isArray ? result : result[0];
+};
+
+const transformGeographicToWebMercator = function(coordinates) {
+  const latitude = coordinates[0],
+    longitude = coordinates[1],
+    halfRadius = Math.PI * SPHERE.a;
+  let x = (longitude * halfRadius) / 180,
+    y = Math.log(Math.tan(((90 + latitude) * Math.PI) / 360)) / (Math.PI / 180);
+  y = (y * halfRadius) / 180;
+  return [x, y];
+};
+const transformWebMercatorToGeographic = function(coordinates) {
+  const x = coordinates[1],
+    y = coordinates[0],
+    halfRadius = Math.PI * SPHERE.a;
+  let longitude = (y / halfRadius) * 180,
+    latitude = (x / halfRadius) * 180;
+  latitude = (180 / Math.PI) * (2 * Math.atan(Math.exp((latitude * Math.PI) / 180)) - Math.PI / 2);
+  return [latitude, longitude];
+};
 
 exports.ellipsoids = ellipsoids;
 exports.projections = projections;
-exports.Transformations = Transformations;
+exports.BGSCoordinates = BGSCoordinates;
+exports.transformGeographicToLambert = transformGeographicToLambert;
+exports.transformLambertToGeographic = transformLambertToGeographic;
+exports.transformGeographicToUTM = transformGeographicToUTM;
+exports.transformUTMToGeographic = transformUTMToGeographic;
+exports.transformGeographicToGauss = transformGeographicToGauss;
+exports.transformGaussToGeographic = transformGaussToGeographic;
+exports.transformGeographicToGeocentric = transformGeographicToGeocentric;
+exports.transformGeocentricToGeographic = transformGeocentricToGeographic;
+exports.transformGeographicToWebMercator = transformGeographicToWebMercator;
+exports.transformWebMercatorToGeographic = transformWebMercatorToGeographic;
+exports.convertDecimalDegreesToDMS = convertDecimalDegreesToDMS;
+exports.convertDMStoDecimalDegrees = convertDMStoDecimalDegrees;

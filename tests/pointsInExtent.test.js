@@ -2,7 +2,7 @@ import { checkResult, DELTA_BGS } from './test';
 import { BGSCoordinates, projections } from '../src/main';
 
 describe(`Test BGS Coordinates in extent dS = ${DELTA_BGS}m`, () => {
-  const tr = new BGSCoordinates();
+  const bgs = new BGSCoordinates();
   let input = [
     [4541923.842621584422886, 8478245.736685760319233],
     [4548092.455784041434526, 8480000.112906275317073],
@@ -28,7 +28,6 @@ describe(`Test BGS Coordinates in extent dS = ${DELTA_BGS}m`, () => {
     [4533944.260457305237651, 8477962.772779224440455],
     [4538698.054087088443339, 8476774.324371779337525],
     [4553129.213320359587669, 8475416.097620412707329],
-    [4560316.496546342037618, 8476038.618214789777994],
     [4543395.254935564473271, 8486508.282756574451923],
     [4533717.889332077465951, 8491601.633074199780822],
     [4526756.977231322787702, 8497826.839017963036895],
@@ -94,7 +93,6 @@ describe(`Test BGS Coordinates in extent dS = ${DELTA_BGS}m`, () => {
     [4662305.524, 299340.606],
     [4667087.102, 298269.699],
     [4681547.025, 297267.616],
-    [4688716.54, 298067.081],
     [4671542.943, 308116.271],
     [4661743.198, 312969.595],
     [4654631.134, 319021.426],
@@ -138,18 +136,18 @@ describe(`Test BGS Coordinates in extent dS = ${DELTA_BGS}m`, () => {
 
   it('Transform with provided extent', () => {
     let extent = [4515891.16322039, 8471284.82458501, 4565579.62520789, 8551929.53794741];
-    let result = tr.transformArray(input, projections.BGS_1970_К9, projections.BGS_2005_KK, true, extent, 0);
+    let result = bgs.transformArray(input, projections.BGS_1970_К9, projections.BGS_2005_KK, true, extent, 0);
 
     for (let i = 0; i < result.length; i++) {
-      checkResult(expected[i], result[i], 0.2);
+      checkResult(expected[i], result[i], DELTA_BGS);
     }
   });
 
   it('Transform with calculated extent', () => {
-    let result = tr.transformArray(input, projections.BGS_1970_К9, projections.BGS_2005_KK, true);
+    let result = bgs.transformArray(input, projections.BGS_1970_К9, projections.BGS_2005_KK, true);
 
     for (let i = 0; i < result.length; i++) {
-      checkResult(expected[i], result[i], 0.2);
+      checkResult(expected[i], result[i], DELTA_BGS);
     }
   });
 });

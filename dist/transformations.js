@@ -1,5 +1,5 @@
 /** 
- * transformations - v1.1.0
+ * transformations - v1.2.0
  * description: Transform coordinates between various coordinate systems used in Bulgaria.
  * author: bojko108 <bojko108@gmail.com>
  * 
@@ -183,21 +183,21 @@ const BGS_1950_6_27 = {
   y0: 5500000.0,
   scale: 1
 };
-const BGS_1970_К3 = {
+const BGS_1970_K3 = {
   name: 'BGS_1970_K3',
-  alias: 'КС 1970 Зона К3'
+  alias: 'КС 1970 Зона K3'
 };
-const BGS_1970_К5 = {
+const BGS_1970_K5 = {
   name: 'BGS_1970_K5',
-  alias: 'КС 1970 Зона К5'
+  alias: 'КС 1970 Зона K5'
 };
-const BGS_1970_К7 = {
+const BGS_1970_K7 = {
   name: 'BGS_1970_K7',
-  alias: 'КС 1970 Зона К7'
+  alias: 'КС 1970 Зона K7'
 };
-const BGS_1970_К9 = {
+const BGS_1970_K9 = {
   name: 'BGS_1970_K9',
-  alias: 'КС 1970 Зона К9'
+  alias: 'КС 1970 Зона K9'
 };
 const BGS_2005_KK = {
   name: 'BGS_2005_KK',
@@ -237,10 +237,10 @@ var projections = Object.freeze({
 	BGS_1950_3_27: BGS_1950_3_27,
 	BGS_1950_6_21: BGS_1950_6_21,
 	BGS_1950_6_27: BGS_1950_6_27,
-	BGS_1970_К3: BGS_1970_К3,
-	BGS_1970_К5: BGS_1970_К5,
-	BGS_1970_К7: BGS_1970_К7,
-	BGS_1970_К9: BGS_1970_К9,
+	BGS_1970_K3: BGS_1970_K3,
+	BGS_1970_K5: BGS_1970_K5,
+	BGS_1970_K7: BGS_1970_K7,
+	BGS_1970_K9: BGS_1970_K9,
 	BGS_2005_KK: BGS_2005_KK,
 	UTM34N: UTM34N,
 	UTM35N: UTM35N
@@ -17647,58 +17647,6 @@ unwrapExports(transformationModels);
 var transformationModels_1 = transformationModels.Affine;
 var transformationModels_2 = transformationModels.TPS;
 
-class BGSCoordinates {
-  constructor() {
-    this._controlPoints = {
-      [BGS_1930_24.name]: new BGS193024(),
-      [BGS_1930_27.name]: new BGS193027(),
-      [BGS_1950_3_24.name]: new BGS1950324(),
-      [BGS_1950_3_27.name]: new BGS1950327(),
-      [BGS_1950_6_21.name]: new BGS1950621(),
-      [BGS_1950_6_27.name]: new BGS1950627(),
-      [BGS_1970_К3.name]: new BGS1970K3(),
-      [BGS_1970_К5.name]: new BGS1970K5(),
-      [BGS_1970_К7.name]: new BGS1970K7(),
-      [BGS_1970_К9.name]: new BGS1970K9(),
-      [BGS_2005_KK.name]: new BGS2005KK()
-    };
-  }
-  transformArray(
-    inputPoints,
-    extent = null,
-    inputProjection = BGS_1970_К9,
-    outputProjection = BGS_2005_KK,
-    useTPS = true
-  ) {}
-  transform(inputPoint, inputProjection = BGS_1970_К9, outputProjection = BGS_2005_KK, useTPS = true) {
-    const distance = 20000;
-    if (inputProjection.name === BGS_SOFIA.name) {
-      inputPoint[0] += BGS_SOFIA.x0;
-      inputPoint[1] += BGS_SOFIA.y0;
-    }
-    const inputControlPoints =
-      inputProjection.name === BGS_SOFIA.name
-        ? this._controlPoints[BGS_1950_3_24.name]
-        : this._controlPoints[inputProjection.name];
-    const outputControlPoints =
-      outputProjection.name == BGS_SOFIA.name
-        ? this._controlPoints[BGS_1950_3_24.name]
-        : this._controlPoints[outputProjection.name];
-    const inputGeoPoints = inputControlPoints.getPointsWithin(inputPoint, distance);
-    const outputGeoPoints = outputControlPoints.getPointsById(inputGeoPoints.map(p => p.id));
-    let resultPoint = [];
-    const tr = useTPS
-      ? new transformationModels_2(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]))
-      : new transformationModels_1(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
-    resultPoint = tr.forward(inputPoint);
-    if (outputProjection.name === BGS_SOFIA.name) {
-      resultPoint[0] -= BGS_SOFIA.x0;
-      resultPoint[1] -= BGS_SOFIA.y0;
-    }
-    return resultPoint;
-  }
-}
-
 function toRad(degrees) {
   return (degrees * Math.PI) / 180;
 }
@@ -17790,6 +17738,112 @@ function calculateCentralPointX(lat0, ellipsoid) {
       Math.cos(lat0) *
       (a2 - a4 + a6 + (2 * a4 - (16 / 3) * a6) * Math.pow(Math.sin(lat0), 2) + (16 / 3) * a6 * Math.pow(Math.sin(lat0), 4))
   );
+}
+function calculateExtent(points = []) {
+  let extent = createExtent();
+  points.forEach(p => {
+    if (p[0] < extent[0]) {
+      extent[0] = p[0];
+    }
+    if (p[0] > extent[2]) {
+      extent[2] = p[0];
+    }
+    if (p[1] < extent[1]) {
+      extent[1] = p[1];
+    }
+    if (p[1] > extent[3]) {
+      extent[3] = p[1];
+    }
+  });
+  return extent;
+}
+function createExtent() {
+  return [Infinity, Infinity, -Infinity, -Infinity];
+}
+function buffer(extent, value = 0) {
+  return [extent[0] - value, extent[1] - value, extent[2] + value, extent[3] + value];
+}
+
+class BGSCoordinates {
+  constructor() {
+    this._controlPoints = {
+      [BGS_1930_24.name]: new BGS193024(),
+      [BGS_1930_27.name]: new BGS193027(),
+      [BGS_1950_3_24.name]: new BGS1950324(),
+      [BGS_1950_3_27.name]: new BGS1950327(),
+      [BGS_1950_6_21.name]: new BGS1950621(),
+      [BGS_1950_6_27.name]: new BGS1950627(),
+      [BGS_1970_K3.name]: new BGS1970K3(),
+      [BGS_1970_K5.name]: new BGS1970K5(),
+      [BGS_1970_K7.name]: new BGS1970K7(),
+      [BGS_1970_K9.name]: new BGS1970K9(),
+      [BGS_2005_KK.name]: new BGS2005KK()
+    };
+  }
+  transformArray(
+    inputPoints,
+    inputProjection = BGS_1970_K9,
+    outputProjection = BGS_2005_KK,
+    useTPS = true,
+    extent = [],
+    buffer$$1 = 0
+  ) {
+    extent = extent.length > 0 ? extent : calculateExtent(inputPoints);
+    extent = buffer(extent, buffer$$1);
+    const inputControlPoints =
+      inputProjection.name === BGS_SOFIA.name
+        ? this._controlPoints[BGS_1950_3_24.name]
+        : this._controlPoints[inputProjection.name];
+    const outputControlPoints =
+      outputProjection.name == BGS_SOFIA.name
+        ? this._controlPoints[BGS_1950_3_24.name]
+        : this._controlPoints[outputProjection.name];
+    const inputGeoPoints = inputControlPoints.getPointsInExtent(extent);
+    const outputGeoPoints = outputControlPoints.getPointsById(inputGeoPoints.map(p => p.id));
+    const tr = useTPS
+      ? new transformationModels_2(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]))
+      : new transformationModels_1(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    let result = inputPoints.map(point => {
+      if (inputProjection.name === BGS_SOFIA.name) {
+        point[0] += BGS_SOFIA.x0;
+        point[1] += BGS_SOFIA.y0;
+      }
+      let resultPoint = tr.forward(point);
+      if (outputProjection.name === BGS_SOFIA.name) {
+        resultPoint[0] -= BGS_SOFIA.x0;
+        resultPoint[1] -= BGS_SOFIA.y0;
+      }
+      return resultPoint;
+    });
+    return result;
+  }
+  transform(inputPoint, inputProjection = BGS_1970_K9, outputProjection = BGS_2005_KK, useTPS = true) {
+    const distance = 20000;
+    if (inputProjection.name === BGS_SOFIA.name) {
+      inputPoint[0] += BGS_SOFIA.x0;
+      inputPoint[1] += BGS_SOFIA.y0;
+    }
+    const inputControlPoints =
+      inputProjection.name === BGS_SOFIA.name
+        ? this._controlPoints[BGS_1950_3_24.name]
+        : this._controlPoints[inputProjection.name];
+    const outputControlPoints =
+      outputProjection.name == BGS_SOFIA.name
+        ? this._controlPoints[BGS_1950_3_24.name]
+        : this._controlPoints[outputProjection.name];
+    const inputGeoPoints = inputControlPoints.getPointsWithin(inputPoint, distance);
+    const outputGeoPoints = outputControlPoints.getPointsById(inputGeoPoints.map(p => p.id));
+    let resultPoint = [];
+    const tr = useTPS
+      ? new transformationModels_2(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]))
+      : new transformationModels_1(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    resultPoint = tr.forward(inputPoint);
+    if (outputProjection.name === BGS_SOFIA.name) {
+      resultPoint[0] -= BGS_SOFIA.x0;
+      resultPoint[1] -= BGS_SOFIA.y0;
+    }
+    return resultPoint;
+  }
 }
 
 const convertDecimalDegreesToDMS = function(decimalDegrees) {

@@ -15,6 +15,7 @@ Transform coordinates between various coordinate systems used in Bulgaria.
   - [Transform between geographic coordinates and projected in Web Mercator](#transform-between-geographic-coordinates-and-projected-in-web-mercator)
   - [Transform between geographic and geocentric coordinates](#transform-between-geographic-and-geocentric-coordinates)
   - [Transform between BGS coordinates](#transform-between-bgs-coordinates)
+    - [Transform points in extent](#transform-points-in-extent)
   - [Format decimal degrees from/to degrees, minutes and seconds](#format-decimal-degrees-from/to-degrees,-minutes-and-seconds)
 - [Dependencies](#dependencies)
 - [Tests](#tests)
@@ -179,11 +180,11 @@ import { BGSCoordinates } from 'transformations';
 const bgs = new BGSCoordinates();
 
 let input = [4728966.163, 8607005.227];
-let result = bgs.transform(input, enumProjection.BGS_1930_24, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, projections.BGS_1930_24, projections.BGS_2005_KK);
 // result is: 4728401.432, 483893.508
 
 let input = [4728401.432, 483893.508];
-let result = bgs.transform(input,  enumProjection.BGS_2005_KK, enumProjection.BGS_1930_24);
+let result = bgs.transform(input, projections.BGS_2005_KK, projections.BGS_1930_24);
 // result is: 4728966.153, 8607005.214
 ```
 
@@ -195,11 +196,11 @@ import { BGSCoordinates } from 'transformations';
 const bgs = new BGSCoordinates();
 
 let input = [4729331.175, 8606933.614];
-let result = bgs.transform(input, enumProjection.BGS_1950_3_24, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, projections.BGS_1950_3_24, projections.BGS_2005_KK);
 // result is: 4728401.442, 483893.521
 
 let input = [4728401.432, 483893.508];
-let result = tr.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1950_3_24);
+let result = tr.transform(input, projections.BGS_2005_KK, projections.BGS_1950_3_24);
 // result is: 4729331.165, 8606933.601
 ```
 
@@ -211,11 +212,11 @@ import { BGSCoordinates } from 'transformations';
 const bgs = new BGSCoordinates();
 
 let input = [48276.705, 45420.988];
-let result = bgs.transform(input, enumProjection.BGS_SOFIA, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, projections.BGS_SOFIA, projections.BGS_2005_KK);
 // result is: 4730215.221, 322402.929
 
 let input = [4730215.229, 322402.935];
-let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_SOFIA);
+let result = bgs.transform(input, projections.BGS_2005_KK, projections.BGS_SOFIA);
 // result is: 48276.713, 45420.993
 ```
 
@@ -227,37 +228,54 @@ import { BGSCoordinates } from 'transformations';
 const bgs = new BGSCoordinates();
 
 let input = [4725270.684, 8515734.475];
-let result = bgs.transform(input, enumProjection.BGS_1970_K3, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, projections.BGS_1970_K3, projections.BGS_2005_KK);
 // result is: 4816275.688, 332535.346
 
-let input = [4816275.680, 332535.401];
-let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K3);
+let input = [4816275.68, 332535.401];
+let result = bgs.transform(input, projections.BGS_2005_KK, projections.BGS_1970_K3);
 // result is: 4725270.677, 8515734.530
 
 let input = [4613479.192, 9493233.633];
-let result = bgs.transform(input, enumProjection.BGS_1970_K5, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, projections.BGS_1970_K5, projections.BGS_2005_KK);
 // result is: 4679669.824, 569554.912
 
 let input = [4679669.825, 569554.918];
-let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K5);
+let result = bgs.transform(input, projections.BGS_2005_KK, projections.BGS_1970_K5);
 // result is: 4613479.193, 9493233.639
 
 let input = [4708089.898, 9570974.988];
-let result = bgs.transform(input, enumProjection.BGS_1970_K7, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, projections.BGS_1970_K7, projections.BGS_2005_KK);
 // result is: 4810276.410, 626498.618
 
 let input = [4810276.431, 626498.611];
-let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K7);
+let result = bgs.transform(input, projections.BGS_2005_KK, projections.BGS_1970_K7);
 // result is: 4708089.919, 9570974.981
 
 let input = [4547844.976, 8508858.179];
-let result = bgs.transform(input, enumProjection.BGS_1970_K9, enumProjection.BGS_2005_KK);
+let result = bgs.transform(input, projections.BGS_1970_K9, projections.BGS_2005_KK);
 // result is: 4675440.859, 330568.410
 
 let input = [4675440.847, 330568.434];
-let result = bgs.transform(input, enumProjection.BGS_2005_KK, enumProjection.BGS_1970_K9);
+let result = bgs.transform(input, projections.BGS_2005_KK, projections.BGS_1970_K9);
 // result is: 4547844.965, 8508858.203
 ```
+
+#### Transform points in extent
+
+Use this method to calculate transformation parameters once and apply them to all input points. 
+
+You can either pass an extent, for which the transformation parameters will be calculated:
+```js
+let extent = [4515891.16322039, 8471284.82458501, 4565579.62520789, 8551929.53794741];
+let result = bgs.transformArray([...], projections.BGS_1970_K9, projections.BGS_2005_KK, true, extent);
+```
+
+or just pass the points and use the bounding extent:
+```js
+let result = bgs.transformArray([...], projections.BGS_1970_K9, projections.BGS_2005_KK, true);
+```
+
+***Use TPS transformation as it gives better accuracy.**
 
 ### Format decimal degrees from/to degrees, minutes and seconds
 
@@ -268,7 +286,7 @@ let latitude = 42.336542;
 let dms = convertDecimalDegreesToDMS(latitude);
 // dms is: "422011.5512000000052"
 
-let dms = "422011.5512000000052";
+let dms = '422011.5512000000052';
 let result = convertDMStoDecimalDegrees(dms);
 // result is: 42.336542
 ```

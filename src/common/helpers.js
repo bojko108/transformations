@@ -1,7 +1,7 @@
 /**
  * Convert degrees to radians
  * @public
- * @param {!Number} degrees 
+ * @param {!Number} degrees
  * @return {Number}
  */
 export function toRad(degrees) {
@@ -10,7 +10,7 @@ export function toRad(degrees) {
 /**
  * Convert radians to degrees
  * @public
- * @param {!Number} radians 
+ * @param {!Number} radians
  * @return {Number}
  */
 export function toDeg(radians) {
@@ -19,7 +19,7 @@ export function toDeg(radians) {
 /**
  * Convert decimal degrees to degrees, minutes and seconds
  * @public
- * @param {!Number} decimalDegrees 
+ * @param {!Number} decimalDegrees
  * @return {String}
  */
 export function toDMS(decimalDegrees) {
@@ -43,7 +43,7 @@ export function toDMS(decimalDegrees) {
 /**
  * Convert degrees, minutes and seconds to decimal degrees
  * @public
- * @param {!String} dms 
+ * @param {!String} dms
  * @return {Number}
  */
 export function toDD(dms) {
@@ -57,8 +57,8 @@ export function toDD(dms) {
 /**
  * Add `0` in front of number
  * @public
- * @param {!Number} number 
- * @param {!Number} size 
+ * @param {!Number} number
+ * @param {!Number} size
  * @return {String}
  */
 export function pad(number, size = 2) {
@@ -124,8 +124,8 @@ export function calculateQParameter(latitude, ellipsoid) {
 }
 /**
  * @public
- * @param {!Number} latitude - in radians 
- * @param {!Object.<String,*>} ellipsoid 
+ * @param {!Number} latitude - in radians
+ * @param {!Object.<String,*>} ellipsoid
  * @return {Number}
  */
 export function calculateWParameter(latitude, ellipsoid) {
@@ -133,8 +133,8 @@ export function calculateWParameter(latitude, ellipsoid) {
 }
 /**
  * @public
- * @param {!Number} latitude - in radians 
- * @param {!Object.<String,*>} ellipsoid 
+ * @param {!Number} latitude - in radians
+ * @param {!Object.<String,*>} ellipsoid
  * @return {Number}
  */
 export function calculateCentralPointX(lat0, ellipsoid) {
@@ -154,4 +154,51 @@ export function calculateCentralPointX(lat0, ellipsoid) {
       Math.cos(lat0) *
       (a2 - a4 + a6 + (2 * a4 - (16 / 3) * a6) * Math.pow(Math.sin(lat0), 2) + (16 / 3) * a6 * Math.pow(Math.sin(lat0), 4))
   );
+}
+
+/**
+ * Builds an extent that includes all passed points
+ * @public
+ * @param {Array.<Number>} [points=[]] - array of points
+ * @return {Array.<Number>}
+ */
+export function calculateExtent(points = []) {
+  let extent = createExtent();
+
+  points.forEach(p => {
+    if (p[0] < extent[0]) {
+      extent[0] = p[0];
+    }
+    if (p[0] > extent[2]) {
+      extent[2] = p[0];
+    }
+    if (p[1] < extent[1]) {
+      extent[1] = p[1];
+    }
+    if (p[1] > extent[3]) {
+      extent[3] = p[1];
+    }
+  });
+
+  return extent;
+}
+
+/**
+ * Creates an empty extent
+ * @public
+ * @return {Array.<Number>}
+ */
+export function createExtent() {
+  return [Infinity, Infinity, -Infinity, -Infinity];
+}
+
+/**
+ * Buffers an extent and returns it
+ * @public
+ * @param {!Array.<Number>} extent
+ * @param {Number} value - extend this extent with (in meters)
+ * @return {Array.<Number>}
+ */
+export function buffer(extent, value = 0) {
+  return [extent[0] - value, extent[1] - value, extent[2] + value, extent[3] + value];
 }

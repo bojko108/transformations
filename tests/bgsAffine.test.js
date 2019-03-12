@@ -91,48 +91,48 @@ describe(`Test BGS Coordinates with Affine transformation dS = ${DELTA_BGS}m`, (
   it('BGS 1970 K3', () => {
     let input = [4725270.684, 8515734.475];
     let expected = [4816275.68, 332535.401];
-    let result = tr.transform(input, projections.BGS_1970_К3, projections.BGS_2005_KK, false);
+    let result = tr.transform(input, projections.BGS_1970_K3, projections.BGS_2005_KK, false);
     checkResult(expected, result, DELTA_BGS);
 
     input = [4816275.68, 332535.401];
     expected = [4725270.684, 8515734.475];
-    result = tr.transform(input, projections.BGS_2005_KK, projections.BGS_1970_К3, false);
+    result = tr.transform(input, projections.BGS_2005_KK, projections.BGS_1970_K3, false);
     checkResult(expected, result, DELTA_BGS);
   });
 
   it('BGS 1970 K5', () => {
     let input = [4613479.192, 9493233.633];
     let expected = [4679669.825, 569554.918];
-    let result = tr.transform(input, projections.BGS_1970_К5, projections.BGS_2005_KK, false);
+    let result = tr.transform(input, projections.BGS_1970_K5, projections.BGS_2005_KK, false);
     checkResult(expected, result, DELTA_BGS);
 
     input = [4679669.825, 569554.918];
     expected = [4613479.192, 9493233.633];
-    result = tr.transform(input, projections.BGS_2005_KK, projections.BGS_1970_К5, false);
+    result = tr.transform(input, projections.BGS_2005_KK, projections.BGS_1970_K5, false);
     checkResult(expected, result, DELTA_BGS);
   });
 
   it('BGS 1970 K7', () => {
     let input = [4708089.898, 9570974.988];
     let expected = [4810276.431, 626498.611];
-    let result = tr.transform(input, projections.BGS_1970_К7, projections.BGS_2005_KK, false);
+    let result = tr.transform(input, projections.BGS_1970_K7, projections.BGS_2005_KK, false);
     checkResult(expected, result, DELTA_BGS);
 
     input = [4810276.431, 626498.611];
     expected = [4708089.898, 9570974.988];
-    result = tr.transform(input, projections.BGS_2005_KK, projections.BGS_1970_К7, false);
+    result = tr.transform(input, projections.BGS_2005_KK, projections.BGS_1970_K7, false);
     checkResult(expected, result, DELTA_BGS);
   });
 
   it('BGS 1970 K9', () => {
     let input = [4547844.976, 8508858.179];
     let expected = [4675440.847, 330568.434];
-    let result = tr.transform(input, projections.BGS_1970_К9, projections.BGS_2005_KK, false);
+    let result = tr.transform(input, projections.BGS_1970_K9, projections.BGS_2005_KK, false);
     checkResult(expected, result, DELTA_BGS);
 
     input = [4675440.847, 330568.434];
     expected = [4547844.976, 8508858.179];
-    result = tr.transform(input, projections.BGS_2005_KK, projections.BGS_1970_К9, false);
+    result = tr.transform(input, projections.BGS_2005_KK, projections.BGS_1970_K9, false);
     checkResult(expected, result, DELTA_BGS);
   });
 });

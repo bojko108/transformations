@@ -53,24 +53,24 @@ export const BGS_1950_6_27 = {
   scale: 1
 };
 
-export const BGS_1970_К3 = {
+export const BGS_1970_K3 = {
   name: 'BGS_1970_K3',
-  alias: 'КС 1970 Зона К3'
+  alias: 'КС 1970 Зона K3'
 };
 
-export const BGS_1970_К5 = {
+export const BGS_1970_K5 = {
   name: 'BGS_1970_K5',
-  alias: 'КС 1970 Зона К5'
+  alias: 'КС 1970 Зона K5'
 };
 
-export const BGS_1970_К7 = {
+export const BGS_1970_K7 = {
   name: 'BGS_1970_K7',
-  alias: 'КС 1970 Зона К7'
+  alias: 'КС 1970 Зона K7'
 };
 
-export const BGS_1970_К9 = {
+export const BGS_1970_K9 = {
   name: 'BGS_1970_K9',
-  alias: 'КС 1970 Зона К9'
+  alias: 'КС 1970 Зона K9'
 };
 
 export const BGS_2005_KK = {

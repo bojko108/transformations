@@ -136,7 +136,7 @@ describe(`Test BGS Coordinates in extent dS = ${DELTA_BGS}m`, () => {
 
   it('Transform with provided extent', () => {
     let extent = [4515891.16322039, 8471284.82458501, 4565579.62520789, 8551929.53794741];
-    let result = bgs.transformArray(input, projections.BGS_1970_К9, projections.BGS_2005_KK, true, extent, 0);
+    let result = bgs.transformArray(input, projections.BGS_1970_K9, projections.BGS_2005_KK, true, extent, 0);
 
     for (let i = 0; i < result.length; i++) {
       checkResult(expected[i], result[i], DELTA_BGS);
@@ -144,7 +144,7 @@ describe(`Test BGS Coordinates in extent dS = ${DELTA_BGS}m`, () => {
   });
 
   it('Transform with calculated extent', () => {
-    let result = bgs.transformArray(input, projections.BGS_1970_К9, projections.BGS_2005_KK, true);
+    let result = bgs.transformArray(input, projections.BGS_1970_K9, projections.BGS_2005_KK, true);
 
     for (let i = 0; i < result.length; i++) {
       checkResult(expected[i], result[i], DELTA_BGS);

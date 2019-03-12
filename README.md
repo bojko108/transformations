@@ -267,12 +267,12 @@ Use this method to calculate transformation parameters once and apply them to al
 You can either pass an extent, for which the transformation parameters will be calculated:
 ```js
 let extent = [4515891.16322039, 8471284.82458501, 4565579.62520789, 8551929.53794741];
-let result = bgs.transformArray([...], projections.BGS_1970_К9, projections.BGS_2005_KK, true, extent);
+let result = bgs.transformArray([...], projections.BGS_1970_K9, projections.BGS_2005_KK, true, extent);
 ```
 
 or just pass the points and use the bounding extent:
 ```js
-let result = bgs.transformArray([...], projections.BGS_1970_К9, projections.BGS_2005_KK, true);
+let result = bgs.transformArray([...], projections.BGS_1970_K9, projections.BGS_2005_KK, true);
 ```
 
 ***Use TPS transformation as it gives better accuracy.**

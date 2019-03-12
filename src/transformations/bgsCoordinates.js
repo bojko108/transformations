@@ -18,10 +18,10 @@ export class BGSCoordinates {
       [projections.BGS_1950_3_27.name]: new ControlPoints.BGS1950327(),
       [projections.BGS_1950_6_21.name]: new ControlPoints.BGS1950621(),
       [projections.BGS_1950_6_27.name]: new ControlPoints.BGS1950627(),
-      [projections.BGS_1970_К3.name]: new ControlPoints.BGS1970K3(),
-      [projections.BGS_1970_К5.name]: new ControlPoints.BGS1970K5(),
-      [projections.BGS_1970_К7.name]: new ControlPoints.BGS1970K7(),
-      [projections.BGS_1970_К9.name]: new ControlPoints.BGS1970K9(),
+      [projections.BGS_1970_K3.name]: new ControlPoints.BGS1970K3(),
+      [projections.BGS_1970_K5.name]: new ControlPoints.BGS1970K5(),
+      [projections.BGS_1970_K7.name]: new ControlPoints.BGS1970K7(),
+      [projections.BGS_1970_K9.name]: new ControlPoints.BGS1970K9(),
       [projections.BGS_2005_KK.name]: new ControlPoints.BGS2005KK()
     };
   }
@@ -32,7 +32,7 @@ export class BGSCoordinates {
    * control points. Control points are searched within the provided `extent`.
    * @public
    * @param {!Array.<Number>} inputPoints - coordinates in [Northing, Easting]
-   * @param {Object.<String,*>} [inputProjection=projections.BGS_1970_К9] - input point is in this projection
+   * @param {Object.<String,*>} [inputProjection=projections.BGS_1970_K9] - input point is in this projection
    * @param {Object.<String,*>} [outputProjection=projections.BGS_2005_KK] - result point projection
    * @param {Boolean} [useTPS=true] - use TPS instead of Affine transformation
    * @param {Array.<Number>} [extent=[]] - by default the extent will be calculated based on input points array
@@ -40,7 +40,7 @@ export class BGSCoordinates {
    */
   transformArray(
     inputPoints,
-    inputProjection = projections.BGS_1970_К9,
+    inputProjection = projections.BGS_1970_K9,
     outputProjection = projections.BGS_2005_KK,
     useTPS = true,
     extent = [],
@@ -91,12 +91,12 @@ export class BGSCoordinates {
    * the projection an exception will be thrown.
    * @public
    * @param {!Array.<Number>} inputPoint - coordinates in [Northing, Easting]
-   * @param {Object.<String,*>} [inputProjection=projections.BGS_1970_К9] - input point is in this projection
+   * @param {Object.<String,*>} [inputProjection=projections.BGS_1970_K9] - input point is in this projection
    * @param {Object.<String,*>} [outputProjection=projections.BGS_2005_KK] - result point projection
    * @param {Boolean} [useTPS=true] - use TPS instead of Affine transformation
    * @return {Array.<Number>}
    */
-  transform(inputPoint, inputProjection = projections.BGS_1970_К9, outputProjection = projections.BGS_2005_KK, useTPS = true) {
+  transform(inputPoint, inputProjection = projections.BGS_1970_K9, outputProjection = projections.BGS_2005_KK, useTPS = true) {
     const distance = 20000;
 
     if (inputProjection.name === projections.BGS_SOFIA.name) {

@@ -14,7 +14,14 @@ export default class ControlPointsClass {
    */
   initTree() {
     // var format=function(features){features.forEach(p=>{console.log(`{id:${new Number(p.properties.nid)}, x:${new Number(p.geometry.coordinates[1])}, y: ${new Number(p.geometry.coordinates[0])}},`)});}
-    this._tree = new KDBush(this._points, p => Math.round(p.x), p => Math.round(p.y), 64, Int32Array);
+
+    this._tree = new KDBush(this._points.length);
+    
+    for (const {x, y} of this._points) {
+      this._tree.add(x, y);
+    }
+
+    this._tree.finish();
   }
   /**
    * Get a point from the spatial index by ID

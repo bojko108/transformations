@@ -38,7 +38,7 @@ export const BGS_1950_3_27 = {
 };
 
 export const BGS_1950_6_21 = {
-  name: 'BGS_1950_6_24',
+  name: 'BGS_1950_6_21',
   alias: 'КС 1950 6 градусови 21 градуса',
   Lon0: 21,
   y0: 4500000.0,

@@ -1,7 +1,14 @@
 import * as projections from '../constants/projections';
 import * as ControlPoints from '../controlPoints';
-import { Affine, TPS } from 'transformation-models';
+import { Affine, Helmert, Polynomial, TPS } from 'transformation-models';
 import { buffer as bufferExtent, calculateExtent } from '../common/helpers';
+
+export const TransformationModel = Object.freeze({
+  AFFINE: 'affine',
+  HELMERT: 'helmert',
+  POLYNOMIAL: 'polynomial',
+  TPS: 'tps'
+});
 
 /**
  * Class for transforming coordinates between BGS coordinate systems
@@ -34,7 +41,7 @@ export class BGSCoordinates {
    * @param {!Array.<Number>} inputPoints - coordinates in [Northing, Easting]
    * @param {Object.<String,*>} [inputProjection=projections.BGS_1970_K9] - input point is in this projection
    * @param {Object.<String,*>} [outputProjection=projections.BGS_2005_KK] - result point projection
-   * @param {Boolean} [useTPS=true] - use TPS instead of Affine transformation
+   * @param {String} [transformationModel=TransformationModel.POLYNOMIAL] - the transformation model to use
    * @param {Array.<Number>} [extent=[]] - by default the extent will be calculated based on input points array
    * @param {Number} [buffer=0] - extend the extent with this value in meters
    */
@@ -42,7 +49,7 @@ export class BGSCoordinates {
     inputPoints,
     inputProjection = projections.BGS_1970_K9,
     outputProjection = projections.BGS_2005_KK,
-    useTPS = true,
+    transformationModel = TransformationModel.POLYNOMIAL,
     extent = [],
     buffer = 0
   ) {
@@ -62,9 +69,15 @@ export class BGSCoordinates {
     const inputGeoPoints = inputControlPoints.getPointsInExtent(extent);
     const outputGeoPoints = outputControlPoints.getPointsById(inputGeoPoints.map(p => p.id));
 
-    const tr = useTPS
-      ? new TPS(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]))
-      : new Affine(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    let transform;
+    if (transformationModel === TransformationModel.TPS)
+      transform = new TPS(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    else if (transformationModel === TransformationModel.AFFINE)
+      transform = new Affine(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    else if (transformationModel === TransformationModel.HELMERT)
+      transform = new Helmert(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    else
+      transform = new Polynomial(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
 
     let result = inputPoints.map(point => {
       if (inputProjection.name === projections.BGS_SOFIA.name) {
@@ -72,7 +85,7 @@ export class BGSCoordinates {
         point[1] += projections.BGS_SOFIA.y0;
       }
 
-      let resultPoint = tr.forward(point);
+      let resultPoint = transform.forward(point);
       if (outputProjection.name === projections.BGS_SOFIA.name) {
         resultPoint[0] -= projections.BGS_SOFIA.x0;
         resultPoint[1] -= projections.BGS_SOFIA.y0;
@@ -93,11 +106,16 @@ export class BGSCoordinates {
    * @param {!Array.<Number>} inputPoint - coordinates in [Northing, Easting]
    * @param {Object.<String,*>} [inputProjection=projections.BGS_1970_K9] - input point is in this projection
    * @param {Object.<String,*>} [outputProjection=projections.BGS_2005_KK] - result point projection
-   * @param {Boolean} [useTPS=true] - use TPS instead of Affine transformation
+   * @param {String} [transformationModel=TransformationModel.POLYNOMIAL] - the transformation model to use
+   * @param {Number} [distance=5000] - the distance within which to search for control points
    * @return {Array.<Number>}
    */
-  transform(inputPoint, inputProjection = projections.BGS_1970_K9, outputProjection = projections.BGS_2005_KK, useTPS = true) {
-    const distance = 20000;
+  transform(
+    inputPoint, 
+    inputProjection = projections.BGS_1970_K9,
+    outputProjection = projections.BGS_2005_KK, 
+    transformationModel = TransformationModel.POLYNOMIAL,
+    distance = 5000) {
 
     if (inputProjection.name === projections.BGS_SOFIA.name) {
       inputPoint[0] += projections.BGS_SOFIA.x0;
@@ -117,12 +135,17 @@ export class BGSCoordinates {
 
     let resultPoint = [];
 
-    const tr = useTPS
-      ? new TPS(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]))
-      : new Affine(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    let transform;
+    if (transformationModel === TransformationModel.TPS)
+      transform = new TPS(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    else if (transformationModel === TransformationModel.AFFINE)
+      transform = new Affine(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    else if (transformationModel === TransformationModel.HELMERT)
+      transform = new Helmert(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
+    else
+      transform = new Polynomial(inputGeoPoints.map(p => [p.x, p.y]), outputGeoPoints.map(p => [p.x, p.y]));
 
-    resultPoint = tr.forward(inputPoint);
-
+    resultPoint = transform.forward(inputPoint);
     if (outputProjection.name === projections.BGS_SOFIA.name) {
       resultPoint[0] -= projections.BGS_SOFIA.x0;
       resultPoint[1] -= projections.BGS_SOFIA.y0;
@@ -131,3 +154,4 @@ export class BGSCoordinates {
     return resultPoint;
   }
 }
+

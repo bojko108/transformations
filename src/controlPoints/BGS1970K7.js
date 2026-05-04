@@ -1,6 +1,6 @@
 ﻿import ControlPointsClass from './ControlPointsClass';
 /**
- * Class holding information for all contriol points in BGS 1970 K7 projection
+ * Class holding information for all control points in BGS 1970 K7 projection
  * @private
  * @extends {ControlPointsClass}
  */

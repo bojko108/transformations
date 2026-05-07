@@ -1,5 +1,6 @@
 import { checkResult, DELTA_BGS } from './test.js';
 import { BGSCoordinates, projections } from '../src/main.js';
+import { describe, it } from 'node:test';
 
 describe(`Test BGS Coordinates in extent dS = ${DELTA_BGS}m`, () => {
   const bgs = new BGSCoordinates();

@@ -1,4 +1,5 @@
-import { assert } from 'chai';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { convertDecimalDegreesToDMS, convertDMStoDecimalDegrees } from '../src/main.js';
 
 describe('Test Coordinate formatters', () => {
@@ -7,7 +8,7 @@ describe('Test Coordinate formatters', () => {
     let expected = '422011.5512';
     let result = convertDecimalDegreesToDMS(input);
 
-    assert.isNotNull(result);
+    assert.notEqual(result, null);
     assert.strictEqual(result, expected);
   });
 
@@ -16,7 +17,7 @@ describe('Test Coordinate formatters', () => {
     let expected = 42.336542;
     let result = convertDMStoDecimalDegrees(input);
 
-    assert.isNotNull(result);
+    assert.notEqual(result, null);
     assert.strictEqual(result, expected);
   });
 });

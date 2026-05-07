@@ -1,5 +1,6 @@
 import { checkResult, DELTA_METERS, DELTA_DEGREES } from './test.js';
 import { transformGeographicToGeocentric, transformGeocentricToGeographic } from '../src/main.js';
+import { describe, it } from 'node:test';
 
 describe(`Test Geographic and Geocentric coordinates dS = ${DELTA_METERS}m, ${DELTA_DEGREES}deg`, () => {
   it('Geographic to Geocentric coordinates', () => {

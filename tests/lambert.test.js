@@ -1,5 +1,6 @@
 import { checkResult, DELTA_METERS, DELTA_DEGREES } from './test.js';
 import { transformGeographicToLambert, transformLambertToGeographic, ellipsoids, projections } from '../src/main.js';
+import { describe, it } from 'node:test';
 
 describe(`Test Geographic and Lambert coordinates dS = ${DELTA_METERS}m, ${DELTA_DEGREES}deg`, () => {
   it('Geographic to Lambert coordinates', () => {

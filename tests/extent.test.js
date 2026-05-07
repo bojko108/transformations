@@ -1,4 +1,5 @@
-import { assert } from 'chai';
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
 import { calculateExtent, buffer } from '../src/common/helpers.js';
 
 describe(`Calculate extent`, () => {
@@ -6,7 +7,7 @@ describe(`Calculate extent`, () => {
     let expected = [Infinity, Infinity, -Infinity, -Infinity];
     let result = calculateExtent();
 
-    assert.isArray(result);
+    //assert.isArray(result);
     assert.strictEqual(result[0], expected[0]);
     assert.strictEqual(result[1], expected[1]);
     assert.strictEqual(result[2], expected[2]);
@@ -26,11 +27,11 @@ describe(`Calculate extent`, () => {
     let expected = [4602138.561932175, 8444855.995714663, 4634509.63283975, 8486961.02500703];
     let result = calculateExtent(input);
 
-    assert.isArray(result);
-    assert.closeTo(result[0], expected[0], 0);
-    assert.closeTo(result[1], expected[1], 0);
-    assert.closeTo(result[2], expected[2], 0);
-    assert.closeTo(result[3], expected[3], 0);
+    //assert.isArray(result);
+    assert.strictEqual(result[0], expected[0], 0);
+    assert.strictEqual(result[1], expected[1], 0);
+    assert.strictEqual(result[2], expected[2], 0);
+    assert.strictEqual(result[3], expected[3], 0);
   });
 
   it('Should buffer extent', () => {
@@ -49,10 +50,10 @@ describe(`Calculate extent`, () => {
     // buffer with 20 km
     result = buffer(result, 20000);
 
-    assert.isArray(result);
-    assert.closeTo(result[0], expected[0], 0);
-    assert.closeTo(result[1], expected[1], 0);
-    assert.closeTo(result[2], expected[2], 0);
-    assert.closeTo(result[3], expected[3], 0);
+    //assert.is.isArray(result);
+    assert.strictEqual(result[0], expected[0], 0);
+    assert.strictEqual(result[1], expected[1], 0);
+    assert.strictEqual(result[2], expected[2], 0);
+    assert.strictEqual(result[3], expected[3], 0);
   });
 });

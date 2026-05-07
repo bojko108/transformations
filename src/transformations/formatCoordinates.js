@@ -1,4 +1,4 @@
-import { toDMS, toDD } from '../common/helpers';
+import { toDMS, toDD } from '../common/helpers.js';
 
 /**
  * Converts decimal degrees to degrees, minutes and seconds

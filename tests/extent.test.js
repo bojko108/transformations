@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { calculateExtent, buffer } from '../src/common/helpers';
+import { calculateExtent, buffer } from '../src/common/helpers.js';
 
 describe(`Calculate extent`, () => {
   it('Should create empy extent', () => {

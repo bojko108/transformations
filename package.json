@@ -27,7 +27,6 @@
     "build": "rollup --config ./config/build.js"
   },
   "dependencies": {
-    "kdbush": "^4.0.2",
     "transformation-models": "^2.0.0"
   },
   "devDependencies": {

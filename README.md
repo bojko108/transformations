@@ -4,22 +4,22 @@ Transform coordinates between various coordinate systems used in Bulgaria.
 
 ## Contents
 
-- [Info](#info)
-- [Install](#install)
-- [Ellipsoids](#ellipsoids)
-- [Projections](#projections)
-- [Examples](#examples)
-  - [Transform between geographic coordinates and projected in Lambert projection](#transform-between-geographic-coordinates-and-projected-in-lambert-projection)
-  - [Transform between geographic coordinates and projected in UTM](#transform-between-geographic-coordinates-and-projected-in-utm)
-  - [Transform between geographic coordinates and projected in Gauss–Krüger](#transform-between-geographic-coordinates-and-projected-in-gauss-krüger)
-  - [Transform between geographic coordinates and projected in Web Mercator](#transform-between-geographic-coordinates-and-projected-in-web-mercator)
-  - [Transform between geographic and geocentric coordinates](#transform-between-geographic-and-geocentric-coordinates)
-  - [Transform between BGS coordinates](#transform-between-bgs-coordinates)
-    - [Transform points in extent](#transform-points-in-extent)
-  - [Format decimal degrees from/to degrees, minutes and seconds](#format-decimal-degrees-from/to-degrees,-minutes-and-seconds)
-- [Dependencies](#dependencies)
-- [Tests](#tests)
-- [License](#license)
+- [Transformations](#transformations)
+  - [Contents](#contents)
+  - [Info](#info)
+  - [Install](#install)
+    - [Ellipsoids](#ellipsoids)
+    - [Projections](#projections)
+  - [Examples](#examples)
+    - [Transform between geographic coordinates and projected in Lambert projection](#transform-between-geographic-coordinates-and-projected-in-lambert-projection)
+    - [Transform between geographic coordinates and projected in UTM](#transform-between-geographic-coordinates-and-projected-in-utm)
+    - [Transform between geographic coordinates and projected in Gauss–Krüger](#transform-between-geographic-coordinates-and-projected-in-gausskrüger)
+    - [Transform between geographic coordinates and projected in Web Mercator](#transform-between-geographic-coordinates-and-projected-in-web-mercator)
+    - [Transform between geographic and geocentric coordinates](#transform-between-geographic-and-geocentric-coordinates)
+    - [Transform between BGS coordinates](#transform-between-bgs-coordinates)
+    - [Format decimal degrees from/to degrees, minutes and seconds](#format-decimal-degrees-fromto-degrees-minutes-and-seconds)
+  - [Tests](#tests)
+  - [License](#license)
 
 ## Info
 
@@ -30,7 +30,7 @@ The project can be used for transforming coordinates between various coordinate 
 - BGS 1930
 - BGS 1950
 - BGS Sofia
-- BGS 1970 (there can be no control points near by if the point is close to the zone's border)
+- BGS 1970 
 - BGS 2005
 
 Following projections are available:
@@ -46,7 +46,7 @@ You can transform between:
 - Projected coordinates
 - Geocentric coordinates
 
-Transformations between BGS coordinate systems are done by calculating transformation parameters using TPS or Affine transformation based on predefined control points ([ControlPoints namespace](https://github.com/bojko108/transformations/tree/master/src/controlPoints)). You can control what type of transformation is used by passing `useTPS` boolean parameter to `BGSCoordinates.transform()`. All other transformations are done directly as the transformation parameters are known. Precision is arround `10cm`.
+Transformations between BGS coordinate systems are done by calculating shift parameters from ([precomputed grids](https://github.com/bojko108/transformations/tree/master/src/grids/index.js)). Grids are computed for both forward and reverse transformations. To construct the grids, 10 000 control points are transformed using official transformation engine, provided by the cadastral agency.
 
 ## Install
 
@@ -260,23 +260,6 @@ let result = bgs.transform(input, projections.BGS_2005_KK, projections.BGS_1970_
 // result is: 4547844.965, 8508858.203
 ```
 
-#### Transform points in extent
-
-Use this method to calculate transformation parameters once and apply them to all input points. 
-
-You can either pass an extent, for which the transformation parameters will be calculated:
-```js
-let extent = [4515891.16322039, 8471284.82458501, 4565579.62520789, 8551929.53794741];
-let result = bgs.transformArray([...], projections.BGS_1970_K9, projections.BGS_2005_KK, true, extent);
-```
-
-or just pass the points and use the bounding extent:
-```js
-let result = bgs.transformArray([...], projections.BGS_1970_K9, projections.BGS_2005_KK, true);
-```
-
-***Use TPS transformation as it gives better accuracy.**
-
 ### Format decimal degrees from/to degrees, minutes and seconds
 
 ```js
@@ -290,11 +273,6 @@ let dms = '422011.5512000000052';
 let result = convertDMStoDecimalDegrees(dms);
 // result is: 42.336542
 ```
-
-## Dependencies
-
-- [KDBush](https://www.npmjs.com/package/kdbush)
-- [transformation-models](https://www.npmjs.com/package/transformation-models)
 
 ## Tests
 

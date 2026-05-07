@@ -1,6 +1,6 @@
-import { WGS84 } from '../constants/ellipsoids';
-import { BGS_2005_KK } from '../constants/projections';
-import { toRad, toDeg, calculateQParameter, calculateWParameter, calculateCentralPointX } from '../common/helpers';
+import { WGS84 } from '../constants/ellipsoids.js';
+import { BGS_2005_KK } from '../constants/projections.js';
+import { toRad, toDeg, calculateQParameter, calculateWParameter, calculateCentralPointX } from '../common/helpers.js';
 
 /**
  * Transforms geographic coordinates to projected in Lambert projection. You can pass single point or

@@ -1,5 +1,5 @@
-import * as ellipsoids from './constants/ellipsoids';
-import * as projections from './constants/projections';
+import * as ellipsoids from './constants/ellipsoids.js';
+import * as projections from './constants/projections.js';
 import {
   BGSCoordinates,
   transformGeographicToLambert,
@@ -14,7 +14,7 @@ import {
   transformWebMercatorToGeographic,
   convertDecimalDegreesToDMS,
   convertDMStoDecimalDegrees
-} from './transformations';
+} from './transformations/index.js';
 
 export { ellipsoids, projections };
 export {

@@ -1,6 +1,6 @@
-import { HAYFORD, WGS84 } from '../constants/ellipsoids';
-import { BGS_1930_24, UTM35N } from '../constants/projections';
-import { toRad, toDeg, arcLengthOfMeridian, footpointLatitude } from '../common/helpers';
+import { HAYFORD, WGS84 } from '../constants/ellipsoids.js';
+import { BGS_1930_24, UTM35N } from '../constants/projections.js';
+import { toRad, toDeg, arcLengthOfMeridian, footpointLatitude } from '../common/helpers.js';
 
 /**
  * Transforms geographic coordinates to projected in UTM projection. You can pass single point or

@@ -1,4 +1,4 @@
-import { SPHERE } from '../constants/ellipsoids';
+import { SPHERE } from '../constants/ellipsoids.js';
 
 /**
  * Transforms geographic coordinates to projected in WebMercator. You can pass single point or

@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { convertDecimalDegreesToDMS, convertDMStoDecimalDegrees } from '../src/main';
+import { convertDecimalDegreesToDMS, convertDMStoDecimalDegrees } from '../src/main.js';
 
 describe('Test Coordinate formatters', () => {
   it('Decimal degrees to degrees, minutes and seconds', () => {

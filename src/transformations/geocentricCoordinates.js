@@ -1,5 +1,5 @@
-import {  WGS84 } from '../constants/ellipsoids';
-import { toRad, toDeg } from '../common/helpers';
+import {  WGS84 } from '../constants/ellipsoids.js';
+import { toRad, toDeg } from '../common/helpers.js';
 
 /**
  * Transforms geographic coordinates to geocentric. You can pass single point or

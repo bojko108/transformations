@@ -1,5 +1,5 @@
-import { checkResult, DELTA_METERS, DELTA_DEGREES } from './test';
-import { transformGeographicToUTM, transformUTMToGeographic } from '../src/main';
+import { checkResult, DELTA_METERS, DELTA_DEGREES } from './test.js';
+import { transformGeographicToUTM, transformUTMToGeographic } from '../src/main.js';
 
 describe(`Test Geographic and UTM coordinates dS = ${DELTA_METERS}m, ${DELTA_DEGREES}deg`, () => {
   it('Geographic to UTM coordinates', () => {

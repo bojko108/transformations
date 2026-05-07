@@ -1,5 +1,5 @@
-import { checkResult, DELTA_METERS, DELTA_DEGREES } from './test';
-import { transformGeographicToWebMercator, transformWebMercatorToGeographic } from '../src/main';
+import { checkResult, DELTA_METERS, DELTA_DEGREES } from './test.js';
+import { transformGeographicToWebMercator, transformWebMercatorToGeographic } from '../src/main.js';
 
 describe(`Test Geographic and Web Mercator coordinates dS = ${DELTA_METERS}m, ${DELTA_DEGREES}deg`, () => {
   it('Geographic to Web Mercator coordinates', () => {

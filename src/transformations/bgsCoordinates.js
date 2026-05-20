@@ -1,5 +1,5 @@
 import * as projections from '../constants/projections.js';
-import { loadGrid } from '../grids/index.js';
+import { getOrLoadGrid } from '../grids/index.js';
 
 /**
  * Class for transforming coordinates between BGS coordinate systems. 
@@ -24,7 +24,7 @@ export class BGSCoordinates {
     const sourceProjection = this._resolveProjection(inputProjection);
     const targetProjection = this._resolveProjection(outputProjection);
 
-    const grid = loadGrid(sourceProjection.name, targetProjection.name);
+    const grid = getOrLoadGrid(sourceProjection.name, targetProjection.name);
     if (!grid) {
       throw new Error(`Grid transformation from ${sourceProjection.name} to ${targetProjection.name} not found.`);
     }
@@ -51,7 +51,7 @@ export class BGSCoordinates {
     const sourceProjection = this._resolveProjection(inputProjection);
     const targetProjection = this._resolveProjection(outputProjection);
 
-    const grid = loadGrid(sourceProjection.name, targetProjection.name);
+    const grid = getOrLoadGrid(sourceProjection.name, targetProjection.name);
     if (!grid) {
       throw new Error(`Grid transformation from ${sourceProjection.name} to ${targetProjection.name} not found.`);
     }

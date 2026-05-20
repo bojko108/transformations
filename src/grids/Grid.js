@@ -1,3 +1,9 @@
+const MAGIC = 'BCSG';
+const MAGIC_BUF = Buffer.from(MAGIC, 'ascii');
+const VERSION = 1;
+const SUPPORTED_VERSION = 1;
+const FLAGS_FLOAT64 = 0b00000001;
+
 /**
  * Regular correction grid for transforming coordinates between two coordinate systems.
  *
@@ -71,14 +77,106 @@ export default class Grid {
     /**
      * Create a `Grid` instance from previously serialized JSON.
      *
-     * @param {{metadata: object, dx: number[], dy: number[], valid: boolean[]}} data Serialized grid.
+     * @param {{metadata: object, dx: number[], dy: number[], valid: boolean[]}} json Serialized grid.
      * @returns {Grid} A new `Grid` instance.
      */
-    static LoadFromFile(data) {
-        const { metadata, dx, dy, valid } = data;
+    static LoadFromJson(json) {
+        const { metadata, dx, dy, valid } = json;
         const { sourceCRS, targetCRS, minX, minY, maxX, maxY, size } = metadata;
 
         return new Grid({ minX, minY, maxX, maxY }, size, sourceCRS, targetCRS, dx, dy, valid);
+    }
+
+    /**
+     * Load a `Grid` from a .bcsg binary buffer.
+     * 
+     * Binary layout (must match gridBinaryWriter.js):
+     *   [0-3]       magic       char[4]   "BCSG"
+     *   [4]         version     uint8     1
+     *   [5]         flags       uint8     bit0 = float64
+     *   [6-7]       meta_len    uint16BE  byte length of metadata JSON
+     *   [8 .. 8+meta_len-1]     utf8      metadata JSON string
+     *   [8+meta_len ..]         float64[] dx  — M doubles, big-endian
+     *   [.. + 8*M]              float64[] dy  — M doubles, big-endian
+     *   [.. + 8*M]              uint8[]   valid bits — ceil(M/8) bytes, LSB-first
+     *
+     * @param {Buffer | ArrayBuffer | Uint8Array} data Binary data of a .bcsg file.
+     * @returns {{ metadata: object, dx: number[], dy: number[], valid: boolean[] }}
+     * @throws {Error} On magic mismatch, unsupported version, or truncated data.
+     */
+    static LoadFromBinary(data) {
+        // Normalize to Node.js Buffer for convenient readXxx helpers
+        const buf = Buffer.isBuffer(data) ? data : Buffer.from(data);
+
+        // ---------- Header (8 bytes) ----------
+        if (buf.length < 8) {
+            throw new Error('File too small to contain a valid BCSG header');
+        }
+
+        const magic = buf.subarray(0, 4).toString('ascii');
+        if (magic !== MAGIC) {
+            throw new Error(`Expected "BCSG", got "${magic}"`);
+        }
+
+        const version = buf.readUInt8(4);
+        if (version !== SUPPORTED_VERSION) {
+            throw new Error(`Unsupported BCSG version: ${version} (expected ${SUPPORTED_VERSION})`);
+        }
+
+        const flags = buf.readUInt8(5);
+        const isFloat64 = (flags & FLAGS_FLOAT64) !== 0;
+        const floatBytes = isFloat64 ? 8 : 4;
+
+        const metaLen = buf.readUInt16BE(6);
+
+        // ---------- Metadata
+        const metaStart = 8;
+        const metaEnd = metaStart + metaLen;
+        if (buf.length < metaEnd) {
+            throw new Error('Metadata section extends beyond buffer');
+        }
+        
+        const metadata = JSON.parse(buf.subarray(metaStart, metaEnd).toString('utf8'));
+        const M = (metadata.rows + 1) * (metadata.cols + 1);
+
+        // ---------- Data section offsets ----------
+        const dxStart = metaEnd;
+        const dyStart = dxStart + M * floatBytes;
+        const validStart = dyStart + M * floatBytes;
+        const validByteCount = Math.ceil(M / 8);
+        const expectedSize = validStart + validByteCount;
+
+        if (buf.length < expectedSize) {
+            throw new Error(
+                `Expected ${expectedSize} bytes, got ${buf.length} ` +
+                `(M=${M} nodes, float${isFloat64 ? 64 : 32})`
+            );
+        }
+
+        // ---------- Read dx / dy ----------
+        const dx = new Array(M);
+        const dy = new Array(M);
+
+        if (isFloat64) {
+            for (let i = 0; i < M; i++) {
+                dx[i] = buf.readDoubleBE(dxStart + i * 8);
+                dy[i] = buf.readDoubleBE(dyStart + i * 8);
+            }
+        } else {
+            // float32 path kept for forward-compatibility with future file variants
+            for (let i = 0; i < M; i++) {
+                dx[i] = buf.readFloatBE(dxStart + i * 4);
+                dy[i] = buf.readFloatBE(dyStart + i * 4);
+            }
+        }
+
+        // ---------- Unpack valid bits ----------
+        const valid = new Array(M);
+        for (let i = 0; i < M; i++) {
+            valid[i] = (buf[validStart + Math.floor(i / 8)] & (1 << (i % 8))) !== 0;
+        }
+
+        return Grid.LoadFromJson({ metadata, dx, dy, valid });
     }
 
     /**
@@ -246,7 +344,7 @@ export default class Grid {
      *
      * @returns {{metadata: object, dx: number[], dy: number[], valid: boolean[]}} Serializable representation.
      */
-    toJSON() {
+    toJson() {
         const { metadata, dx, dy, valid } = this;
         return { metadata, dx, dy, valid };
     }
@@ -282,5 +380,69 @@ export default class Grid {
             type: 'FeatureCollection',
             features
         };
+    }
+
+    /**
+     * Serialize this `Grid` to a `Buffer` in BCSG binary format.
+     * 
+     * Binary layout:
+     *   [0-3]       magic       char[4]   "BCSG"
+     *   [4]         version     uint8     1
+     *   [5]         flags       uint8     bit0=1 means float64 (always set)
+     *   [6-7]       meta_len    uint16    byte length of the metadata JSON string
+     *   [8 .. 8+meta_len-1]     utf8      metadata JSON (same object as before)
+     *   [8+meta_len ..]         float64[] dx  array  — M = (rows+1)*(cols+1) values
+     *   [.. + 8*M]              float64[] dy  array  — M values
+     *   [.. + 8*M]              uint8[]   valid bits — ceil(M/8) bytes, LSB-first per byte
+     *
+     * @param {{ metadata: object, dx: number[], dy: number[], valid: boolean[] }} gridJson
+     * @returns {Buffer}
+     */
+    toBinary() {
+        // Metadata
+        const metaJson = JSON.stringify(this.metadata);
+        const metaBuf = Buffer.from(metaJson, 'utf8');
+        if (metaBuf.length > 65535) {
+            throw new Error(`Metadata JSON too large for uint16 length field: ${metaBuf.length} bytes`);
+        }
+
+        // ---------- Validate array lengths ----------
+        const M = this.dx.length;
+        if (this.dy.length !== M || this.valid.length !== M) {
+            throw new Error(`Array length mismatch: dx=${M}, dy=${this.dy.length}, valid=${this.valid.length}`);
+        }
+
+        const expectedM = (this.metadata.rows + 1) * (this.metadata.cols + 1);
+        if (M !== expectedM) {
+            console.warn(`Warning: expected ${expectedM} nodes from metadata but got ${M}`);
+        }
+
+        // ---------- Bit-pack the valid flags ----------
+        //   Each byte holds 8 flags, LSB = first flag in the group.
+        const validByteCount = Math.ceil(M / 8);
+        const validBuf = Buffer.alloc(validByteCount, 0);
+        for (let i = 0; i < M; i++) {
+            if (this.valid[i]) {
+                validBuf[Math.floor(i / 8)] |= (1 << (i % 8));
+            }
+        }
+
+        // ---------- Typed arrays for dx / dy ----------
+        const dxBuf = Buffer.allocUnsafe(M * 8);
+        const dyBuf = Buffer.allocUnsafe(M * 8);
+        for (let i = 0; i < M; i++) {
+            dxBuf.writeDoubleBE(this.dx[i], i * 8);
+            dyBuf.writeDoubleBE(this.dy[i], i * 8);
+        }
+
+        // ---------- Assemble final buffer ----------
+        //   Header: 4 (magic) + 1 (version) + 1 (flags) + 2 (meta_len) = 8 bytes
+        const header = Buffer.alloc(8);
+        MAGIC_BUF.copy(header, 0);
+        header.writeUInt8(VERSION, 4);
+        header.writeUInt8(FLAGS_FLOAT64, 5);
+        header.writeUInt16BE(metaBuf.length, 6);
+
+        return Buffer.concat([header, metaBuf, dxBuf, dyBuf, validBuf]);
     }
 }

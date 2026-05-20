@@ -5,7 +5,7 @@
   "author": "bojko108 <bojko108@gmail.com>",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/transformations.js",
+  "main": "./src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/bojko108/transformations.git"

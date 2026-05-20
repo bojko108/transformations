@@ -46,7 +46,7 @@ You can transform between:
 - Projected coordinates
 - Geocentric coordinates
 
-Transformations between BGS coordinate systems are done by calculating shift parameters from ([precomputed grids](https://github.com/bojko108/transformations/tree/master/src/grids/index.js)). Grids are computed for both forward and reverse transformations. To construct the grids, 10 000 control points are transformed using official transformation engine, provided by the cadastral agency.
+Transformations between BGS coordinate systems are done by calculating shift parameters from ([precomputed grids](https://github.com/bojko108/transformations/tree/master/src/grids/index.js)). Grids are computed for both forward and reverse transformations. To construct the grids, 10 000 control points are transformed using official transformation engine, provided by the cadastral agency. 
 
 ## Install
 
